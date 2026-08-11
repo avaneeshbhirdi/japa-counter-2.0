@@ -22,6 +22,7 @@ interface LeaderboardEntry {
   full_name: string;
   avatar_url: string;
   city: string;
+  current_streak?: number;
   total_rounds: number;
   total_counts: number;
 }
@@ -132,6 +133,7 @@ export default function Home() {
     let query = supabase
       .from('leaderboard')
       .select('*')
+      .order('current_streak', { ascending: false, nullsFirst: false })
       .order('total_rounds', { ascending: false })
       .order('total_counts', { ascending: false })
       .limit(100);
@@ -925,7 +927,14 @@ export default function Home() {
                                 {entry.avatar_url ? <img src={entry.avatar_url} alt="Avatar" /> : (entry.full_name?.charAt(0).toUpperCase() || 'U')}
                               </div>
                               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                <span style={{ fontWeight: isMe ? 600 : 400, color: '#fff' }}>{entry.full_name || 'Anonymous Devotee'}</span>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                  <span style={{ fontWeight: isMe ? 600 : 400, color: '#fff' }}>{entry.full_name || 'Anonymous Devotee'}</span>
+                                  {(entry.current_streak && entry.current_streak > 0) ? (
+                                    <span className="streak-badge" style={{ marginTop: 0, padding: '0.1rem 0.4rem', fontSize: '0.65rem' }}>
+                                      🪶 {entry.current_streak}
+                                    </span>
+                                  ) : null}
+                                </div>
                                 {leaderboardTab === 'global' && entry.city && (
                                   <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)' }}>{entry.city}</span>
                                 )}
