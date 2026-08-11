@@ -700,9 +700,11 @@ export default function Home() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <h2 className="log-title" style={{ margin: 0 }}>Sadhana Calendar</h2>
-                    <span style={{ fontSize: '0.8rem', color: '#c89b3c', fontWeight: 600, marginTop: '0.2rem' }}>
-                      Current Streak: {currentStreak} {currentStreak > 0 ? '🦚' : ''}
-                    </span>
+                    {currentStreak > 0 && (
+                      <span className="streak-badge">
+                        🪶 {currentStreak}
+                      </span>
+                    )}
                   </div>
                   <div className="calendar-nav">
                     <button onClick={prevMonth} className="calendar-nav-btn">&larr;</button>
