@@ -610,7 +610,7 @@ export default function Home() {
                       <div style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(160,175,210,0.6)', fontWeight: 600, marginBottom: '0.4rem' }}>Lifetime Stats</div>
                       <div className="stat-row">
                         <span className="stat-label">Current Streak</span>
-                        <span className="stat-value" style={{ color: '#c89b3c', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                        <span className={`streak-badge streak-badge-${currentStreak >= 30 ? 'gold' : currentStreak >= 7 ? 'white' : 'normal'}`} style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.15rem 0.5rem', marginTop: 0 }}>
                           <FeatherIcon streak={currentStreak} size={14} /> {currentStreak}
                         </span>
                       </div>
@@ -709,11 +709,17 @@ export default function Home() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <h2 className="log-title" style={{ margin: 0 }}>Sadhana Calendar</h2>
-                    {currentStreak > 0 && (
-                      <span className="streak-badge">
-                        <FeatherIcon streak={currentStreak} size={16} /> {currentStreak}
+                    <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.4rem', flexWrap: 'wrap' }}>
+                      <span className="streak-badge streak-badge-normal" style={{ marginTop: 0 }} title="Daily Streak: Chanting every day">
+                        <FeatherIcon type="normal" size={16} /> {currentStreak}
                       </span>
-                    )}
+                      <span className="streak-badge streak-badge-white" style={{ marginTop: 0 }} title="Weekly Streak: 7 continuous days of chanting">
+                        <FeatherIcon type="white" size={16} /> {Math.floor(currentStreak / 7)}
+                      </span>
+                      <span className="streak-badge streak-badge-gold" style={{ marginTop: 0 }} title="Monthly Streak: 30 continuous days of chanting">
+                        <FeatherIcon type="gold" size={16} /> {Math.floor(currentStreak / 30)}
+                      </span>
+                    </div>
                   </div>
                   <div className="calendar-nav">
                     <button onClick={prevMonth} className="calendar-nav-btn">&larr;</button>
@@ -937,7 +943,7 @@ export default function Home() {
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                   <span style={{ fontWeight: isMe ? 600 : 400, color: '#fff' }}>{entry.full_name || 'Anonymous Devotee'}</span>
                                   {(entry.current_streak && entry.current_streak > 0) ? (
-                                    <span className="streak-badge" style={{ marginTop: 0, padding: '0.1rem 0.4rem', fontSize: '0.65rem' }}>
+                                    <span className={`streak-badge streak-badge-${entry.current_streak >= 30 ? 'gold' : entry.current_streak >= 7 ? 'white' : 'normal'}`} style={{ marginTop: 0, padding: '0.1rem 0.4rem', fontSize: '0.65rem' }}>
                                       <FeatherIcon streak={entry.current_streak} size={12} /> {entry.current_streak}
                                     </span>
                                   ) : null}

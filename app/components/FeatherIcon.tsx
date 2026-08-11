@@ -3,17 +3,23 @@ import React from 'react';
 export type FeatherType = 'normal' | 'white' | 'gold';
 
 interface FeatherIconProps {
-  streak: number;
+  streak?: number;
+  type?: FeatherType;
   size?: number;
 }
 
-export default function FeatherIcon({ streak, size = 18 }: FeatherIconProps) {
-  let type: FeatherType = 'normal';
-  if (streak >= 30) type = 'gold';
-  else if (streak >= 7) type = 'white';
+export default function FeatherIcon({ streak = 0, type, size = 18 }: FeatherIconProps) {
+  let resolvedType: FeatherType = 'normal';
+  
+  if (type) {
+    resolvedType = type;
+  } else {
+    if (streak >= 30) resolvedType = 'gold';
+    else if (streak >= 7) resolvedType = 'white';
+  }
 
-  const isWhite = type === 'white';
-  const isGold = type === 'gold';
+  const isWhite = resolvedType === 'white';
+  const isGold = resolvedType === 'gold';
 
   // Colors
   const stem = isWhite ? '#e2e8f0' : (isGold ? '#fcd34d' : '#34d399');
