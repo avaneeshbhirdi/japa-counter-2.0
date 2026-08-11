@@ -62,6 +62,7 @@ export default function Home() {
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
   const [leaderboardTab, setLeaderboardTab] = useState<'global' | 'city'>('global');
   const [userCity, setUserCity] = useState('');
+  const [isLeaderboardRefreshing, setIsLeaderboardRefreshing] = useState(false);
 
   // ── Refs ─────────────────────────────────────────────────────────────────
   const supabase = createClient();
@@ -114,6 +115,7 @@ export default function Home() {
 
   // ── Fetch Leaderboard ────────────────────────────────────────────────────
   const fetchLeaderboard = useCallback(async () => {
+    setIsLeaderboardRefreshing(true);
     let query = supabase.from('leaderboard').select('*').order('total_rounds', { ascending: false }).limit(100);
     
     if (leaderboardTab === 'city' && userCity) {
@@ -124,6 +126,7 @@ export default function Home() {
     if (!error && data) {
       setLeaderboardData(data as LeaderboardEntry[]);
     }
+    setIsLeaderboardRefreshing(false);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [leaderboardTab, userCity]);
 
@@ -671,9 +674,13 @@ export default function Home() {
             <button 
               className="log-delete-btn" 
               onClick={fetchLeaderboard}
+              disabled={isLeaderboardRefreshing}
               title="Refresh"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg 
+                width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                className={isLeaderboardRefreshing ? 'spin' : ''}
+              >
                 <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" />
               </svg>
             </button>
@@ -713,7 +720,7 @@ export default function Home() {
                                 {entry.avatar_url ? <img src={entry.avatar_url} alt="Avatar" /> : (entry.full_name?.charAt(0).toUpperCase() || 'U')}
                               </div>
                               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                <span style={{ fontWeight: isMe ? 600 : 400 }}>{entry.full_name || 'Anonymous Devotee'}</span>
+                                <span style={{ fontWeight: isMe ? 600 : 400, color: '#fff' }}>{entry.full_name || 'Anonymous Devotee'}</span>
                                 {leaderboardTab === 'global' && entry.city && (
                                   <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)' }}>{entry.city}</span>
                                 )}
