@@ -64,6 +64,10 @@ export default function Home() {
   const [userCity, setUserCity] = useState('');
   const [isLeaderboardRefreshing, setIsLeaderboardRefreshing] = useState(false);
 
+  // ── Calendar State ───────────────────────────────────────────────────────
+  const [currentCalendarMonth, setCurrentCalendarMonth] = useState<Date>(new Date());
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
+
   // ── Settings ─────────────────────────────────────────────────────────────
   const [isVibrationEnabled, setIsVibrationEnabled] = useState(true);
 
@@ -146,6 +150,52 @@ export default function Home() {
   useEffect(() => {
     if (user) void fetchLogs();
   }, [fetchLogs, user]);
+
+  // ── Calendar Helpers ─────────────────────────────────────────────────────
+  const currentYear = currentCalendarMonth.getFullYear();
+  const currentMonthNum = currentCalendarMonth.getMonth();
+  const daysInMonth = new Date(currentYear, currentMonthNum + 1, 0).getDate();
+  const firstDay = new Date(currentYear, currentMonthNum, 1).getDay();
+
+  const logsByDay = useMemo(() => {
+    const map = new Map<string, { rounds: number; counts: number; logs: SadhanaLog[] }>();
+    logs.forEach(log => {
+      let dateKey = log.date;
+      try {
+        const d = log.created_at ? new Date(log.created_at) : new Date(`${log.date}T${log.time}`);
+        if (!isNaN(d.getTime())) {
+          dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        }
+      } catch {}
+      
+      if (!map.has(dateKey)) {
+        map.set(dateKey, { rounds: 0, counts: 0, logs: [] });
+      }
+      const entry = map.get(dateKey)!;
+      entry.rounds += log.rounds || 0;
+      entry.counts += log.counts || 0;
+      entry.logs.push(log);
+    });
+    return map;
+  }, [logs]);
+
+  const calendarCells = useMemo(() => {
+    const cells = [];
+    for (let i = 0; i < firstDay; i++) cells.push(null);
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateKey = `${currentYear}-${String(currentMonthNum + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      cells.push({ day: d, dateKey, stats: logsByDay.get(dateKey) || null });
+    }
+    return cells;
+  }, [firstDay, daysInMonth, currentYear, currentMonthNum, logsByDay]);
+
+  const prevMonth = () => setCurrentCalendarMonth(new Date(currentYear, currentMonthNum - 1, 1));
+  const nextMonth = () => setCurrentCalendarMonth(new Date(currentYear, currentMonthNum + 1, 1));
+  
+  const todayDateKey = (() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  })();
 
   // ── Audio ────────────────────────────────────────────────────────────────
   const initAudio = useCallback(() => {
