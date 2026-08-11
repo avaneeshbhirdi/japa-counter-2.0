@@ -596,7 +596,7 @@ export default function Home() {
                       <th>Date</th>
                       <th>Time</th>
                       <th>Total Counts</th>
-                      <th>Session</th>
+                      <th>Total Rounds</th>
                       <th>Duration</th>
                     </tr>
                   </thead>
@@ -613,9 +613,7 @@ export default function Home() {
                       } catch { /* fallback */ }
 
                       const reqCounts = log.counts || 0;
-                      const sRounds = Math.floor(reqCounts / 108);
-                      const sCounts = reqCounts % 108;
-                      const breakdown = sRounds > 0 && sCounts > 0 ? `${sRounds} R, ${sCounts} C` : sRounds > 0 ? `${sRounds} R` : `${sCounts} C`;
+                      const reqRounds = log.rounds || 0;
 
                       let duration = '-';
                       if (log.duration_seconds != null) {
@@ -637,7 +635,7 @@ export default function Home() {
                           <td className="td-date">{dateStr}</td>
                           <td className="td-time">{timeStr}</td>
                           <td className="td-counts">{reqCounts}</td>
-                          <td className="td-breakdown">{breakdown}</td>
+                          <td className="td-breakdown">{reqRounds}</td>
                           <td className="td-duration">{duration}</td>
                         </tr>
                       );
