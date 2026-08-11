@@ -194,6 +194,24 @@ export default function Home() {
     return cells;
   }, [firstDay, daysInMonth, currentYear, currentMonthNum, logsByDay]);
 
+  const currentStreak = useMemo(() => {
+    let streak = 0;
+    const now = new Date();
+    const checkDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const formatDate = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+    if (!logsByDay.has(formatDate(checkDate))) {
+      checkDate.setDate(checkDate.getDate() - 1);
+      if (!logsByDay.has(formatDate(checkDate))) return 0; 
+    }
+
+    while (logsByDay.has(formatDate(checkDate))) {
+      streak++;
+      checkDate.setDate(checkDate.getDate() - 1);
+    }
+    return streak;
+  }, [logsByDay]);
+
   const prevMonth = () => setCurrentCalendarMonth(new Date(currentYear, currentMonthNum - 1, 1));
   const nextMonth = () => setCurrentCalendarMonth(new Date(currentYear, currentMonthNum + 1, 1));
   
@@ -680,7 +698,12 @@ export default function Home() {
             {!selectedDay ? (
               <>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                  <h2 className="log-title" style={{ margin: 0 }}>Sadhana Calendar</h2>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <h2 className="log-title" style={{ margin: 0 }}>Sadhana Calendar</h2>
+                    <span style={{ fontSize: '0.8rem', color: '#c89b3c', fontWeight: 600, marginTop: '0.2rem' }}>
+                      Current Streak: {currentStreak} {currentStreak > 0 ? '🦚' : ''}
+                    </span>
+                  </div>
                   <div className="calendar-nav">
                     <button onClick={prevMonth} className="calendar-nav-btn">&larr;</button>
                     <span className="calendar-month-label">
