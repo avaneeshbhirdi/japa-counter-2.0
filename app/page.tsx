@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { User } from '@supabase/supabase-js';
 
@@ -129,7 +129,12 @@ export default function Home() {
   // ── Fetch Leaderboard ────────────────────────────────────────────────────
   const fetchLeaderboard = useCallback(async () => {
     setIsLeaderboardRefreshing(true);
-    let query = supabase.from('leaderboard').select('*').order('total_rounds', { ascending: false }).limit(100);
+    let query = supabase
+      .from('leaderboard')
+      .select('*')
+      .order('total_rounds', { ascending: false })
+      .order('total_counts', { ascending: false })
+      .limit(100);
     
     if (leaderboardTab === 'city' && userCity) {
       query = query.ilike('city', userCity);
@@ -670,90 +675,157 @@ export default function Home() {
           </div>
 
           {/* Table */}
+          {/* Table / Calendar */}
           <div className="log-table-card">
-            <h2 className="log-title">My Sadhana History</h2>
-            <div className="mobile-hint">Long-press a row to select it for deletion</div>
-            {logs.length === 0 ? (
-              <div className="log-empty">No sadhana logs yet. Start chanting and your sessions will be saved here.</div>
+            {!selectedDay ? (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                  <h2 className="log-title" style={{ margin: 0 }}>Sadhana Calendar</h2>
+                  <div className="calendar-nav">
+                    <button onClick={prevMonth} className="calendar-nav-btn">&larr;</button>
+                    <span className="calendar-month-label">
+                      {new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentCalendarMonth)}
+                    </span>
+                    <button onClick={nextMonth} className="calendar-nav-btn">&rarr;</button>
+                  </div>
+                </div>
+
+                <div className="calendar-grid">
+                  <div className="calendar-weekday">Sun</div>
+                  <div className="calendar-weekday">Mon</div>
+                  <div className="calendar-weekday">Tue</div>
+                  <div className="calendar-weekday">Wed</div>
+                  <div className="calendar-weekday">Thu</div>
+                  <div className="calendar-weekday">Fri</div>
+                  <div className="calendar-weekday">Sat</div>
+                  
+                  {calendarCells.map((cell: any, idx: number) => {
+                    if (!cell) return <div key={`empty-${idx}`} className="calendar-cell empty" />;
+                    const hasStats = !!cell.stats;
+                    const isToday = cell.dateKey === todayDateKey;
+                    
+                    return (
+                      <div 
+                        key={cell.dateKey} 
+                        className={`calendar-cell ${hasStats ? 'has-data' : ''} ${isToday ? 'today' : ''}`}
+                        onClick={() => hasStats ? setSelectedDay(cell.dateKey) : null}
+                      >
+                        <span className="calendar-day-num">{cell.day}</span>
+                        {hasStats && (
+                          <div className="calendar-stats">
+                            <span className="calendar-rounds">{cell.stats.rounds}R</span>
+                            <span className="calendar-counts">{cell.stats.counts}C</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
             ) : (
-              <div style={{ overflowX: 'auto' }}>
-                <table className="log-table">
-                  <thead>
-                    <tr>
-                      <th className="td-checkbox" style={{ width: '3rem', textAlign: 'center' }}>
-                        <input
-                          type="checkbox"
-                          aria-label="Select all"
-                          checked={selectedLogs.length === logs.length && logs.length > 0}
-                          onChange={e => e.target.checked ? setSelectedLogs(logs.map(l => l.id)) : setSelectedLogs([])}
-                        />
-                      </th>
-                      <th>Date</th>
-                      <th>Time</th>
-                      <th>Total Counts</th>
-                      <th>Total Rounds</th>
-                      <th>Duration</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {logs.map(log => {
-                      let dateStr = log.date;
-                      let timeStr = log.time;
-                      try {
-                        const d = log.created_at ? new Date(log.created_at) : new Date(`${log.date}T${log.time}`);
-                        if (!isNaN(d.getTime())) {
-                          dateStr = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: '2-digit' }).format(d);
-                          timeStr = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).format(d);
-                        }
-                      } catch { /* fallback */ }
-
-                      const reqCounts = log.counts || 0;
-                      const reqRounds = log.rounds || 0;
-
-                      let duration = '-';
-                      if (log.duration_seconds != null) {
-                        const m = Math.floor(log.duration_seconds / 60);
-                        const s = log.duration_seconds % 60;
-                        duration = m > 0 ? `${m}m ${s}s` : `${s}s`;
-                      }
-
-                      let pressTimer: ReturnType<typeof setTimeout>;
-
-                      return (
-                        <tr 
-                          key={log.id} 
-                          className={selectedLogs.includes(log.id) ? 'selected' : ''}
-                          onTouchStart={() => {
-                            pressTimer = setTimeout(() => {
-                              toggleLogSelection(log.id);
-                              if (isVibrationEnabled && navigator.vibrate) navigator.vibrate(50);
-                            }, 500);
-                          }}
-                          onTouchEnd={() => clearTimeout(pressTimer)}
-                          onTouchMove={() => clearTimeout(pressTimer)}
-                          onContextMenu={(e) => {
-                            if (window.innerWidth <= 640) e.preventDefault();
-                          }}
-                        >
-                          <td className="td-checkbox" style={{ textAlign: 'center' }}>
+              <>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                  <h2 className="log-title" style={{ margin: 0 }}>
+                    {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(selectedDay))}
+                  </h2>
+                  <button className="nav-btn primary" onClick={() => setSelectedDay(null)} style={{ padding: '0.3rem 0.8rem' }}>
+                    &larr; Back
+                  </button>
+                </div>
+                <div className="mobile-hint">Long-press a row to select it for deletion</div>
+                
+                {logsByDay.get(selectedDay)?.logs.length === 0 ? (
+                  <div className="log-empty">No sadhana logs for this day.</div>
+                ) : (
+                  <div style={{ overflowX: 'auto' }}>
+                    <table className="log-table">
+                      <thead>
+                        <tr>
+                          <th className="td-checkbox" style={{ width: '3rem', textAlign: 'center' }}>
                             <input
                               type="checkbox"
-                              aria-label="Select log"
-                              checked={selectedLogs.includes(log.id)}
-                              onChange={() => toggleLogSelection(log.id)}
+                              aria-label="Select all"
+                              checked={
+                                (logsByDay.get(selectedDay)?.logs || []).length > 0 &&
+                                (logsByDay.get(selectedDay)?.logs || []).every((l: any) => selectedLogs.includes(l.id))
+                              }
+                              onChange={e => {
+                                const dayLogs = logsByDay.get(selectedDay)?.logs || [];
+                                if (e.target.checked) {
+                                  const newSet = new Set(selectedLogs);
+                                  dayLogs.forEach((l: any) => newSet.add(l.id));
+                                  setSelectedLogs(Array.from(newSet));
+                                } else {
+                                  const dayLogIds = dayLogs.map((l: any) => l.id);
+                                  setSelectedLogs(selectedLogs.filter(id => !dayLogIds.includes(id)));
+                                }
+                              }}
                             />
-                          </td>
-                          <td className="td-date">{dateStr}</td>
-                          <td className="td-time">{timeStr}</td>
-                          <td className="td-counts">{reqCounts}</td>
-                          <td className="td-breakdown">{reqRounds}</td>
-                          <td className="td-duration">{duration}</td>
+                          </th>
+                          <th>Time</th>
+                          <th>Total Counts</th>
+                          <th>Total Rounds</th>
+                          <th>Duration</th>
                         </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                      </thead>
+                      <tbody>
+                        {(logsByDay.get(selectedDay)?.logs || []).map((log: any) => {
+                          let timeStr = log.time;
+                          try {
+                            const d = log.created_at ? new Date(log.created_at) : new Date(`${log.date}T${log.time}`);
+                            if (!isNaN(d.getTime())) {
+                              timeStr = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).format(d);
+                            }
+                          } catch { /* fallback */ }
+
+                          const reqCounts = log.counts || 0;
+                          const reqRounds = log.rounds || 0;
+
+                          let duration = '-';
+                          if (log.duration_seconds != null) {
+                            const m = Math.floor(log.duration_seconds / 60);
+                            const s = log.duration_seconds % 60;
+                            duration = m > 0 ? `${m}m ${s}s` : `${s}s`;
+                          }
+
+                          let pressTimer: ReturnType<typeof setTimeout>;
+
+                          return (
+                            <tr 
+                              key={log.id} 
+                              className={selectedLogs.includes(log.id) ? 'selected' : ''}
+                              onTouchStart={() => {
+                                pressTimer = setTimeout(() => {
+                                  toggleLogSelection(log.id);
+                                  if (isVibrationEnabled && navigator.vibrate) navigator.vibrate(50);
+                                }, 500);
+                              }}
+                              onTouchEnd={() => clearTimeout(pressTimer)}
+                              onTouchMove={() => clearTimeout(pressTimer)}
+                              onContextMenu={(e) => {
+                                if (window.innerWidth <= 640) e.preventDefault();
+                              }}
+                            >
+                              <td className="td-checkbox" style={{ textAlign: 'center' }}>
+                                <input
+                                  type="checkbox"
+                                  aria-label="Select log"
+                                  checked={selectedLogs.includes(log.id)}
+                                  onChange={() => toggleLogSelection(log.id)}
+                                />
+                              </td>
+                              <td className="td-time">{timeStr}</td>
+                              <td className="td-counts">{reqCounts}</td>
+                              <td className="td-breakdown">{reqRounds}</td>
+                              <td className="td-duration">{duration}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

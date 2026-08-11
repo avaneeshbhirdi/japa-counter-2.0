@@ -1222,6 +1222,113 @@ body {
 }
 
 /* ================================
+   CALENDAR VIEW
+   ================================ */
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.calendar-nav-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.calendar-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+.calendar-month-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+  min-width: 120px;
+  text-align: center;
+}
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+.calendar-weekday {
+  text-align: center;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(130, 160, 230, 0.6);
+  padding-bottom: 0.5rem;
+  font-weight: 600;
+}
+.calendar-cell {
+  aspect-ratio: 1;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  padding: 0.3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: default;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.calendar-cell.empty {
+  background: transparent;
+  border: none;
+}
+.calendar-cell.has-data {
+  background: rgba(120, 80, 200, 0.1);
+  border-color: rgba(120, 80, 200, 0.3);
+  cursor: pointer;
+}
+.calendar-cell.has-data:hover {
+  background: rgba(120, 80, 200, 0.2);
+  transform: translateY(-2px);
+}
+.calendar-cell.today {
+  border-color: rgba(200, 155, 60, 0.5);
+  background: rgba(200, 155, 60, 0.08);
+}
+.calendar-day-num {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+}
+.calendar-cell.has-data .calendar-day-num {
+  color: rgba(255, 255, 255, 0.9);
+}
+.calendar-cell.today .calendar-day-num {
+  color: #c89b3c;
+}
+.calendar-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
+}
+.calendar-rounds {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #6ee7b7;
+  line-height: 1;
+}
+.calendar-counts {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: #c4b5fd;
+  line-height: 1;
+}
+
+/* ================================
    ANIMATIONS
    ================================ */
 @keyframes spin {
