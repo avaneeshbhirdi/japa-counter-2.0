@@ -622,6 +622,7 @@ export default function Home() {
           {/* Table */}
           <div className="log-table-card">
             <h2 className="log-title">My Sadhana History</h2>
+            <div className="mobile-hint">Long-press a row to select it for deletion</div>
             {logs.length === 0 ? (
               <div className="log-empty">No sadhana logs yet. Start chanting and your sessions will be saved here.</div>
             ) : (
@@ -629,7 +630,7 @@ export default function Home() {
                 <table className="log-table">
                   <thead>
                     <tr>
-                      <th style={{ width: '2.5rem', textAlign: 'center' }}>
+                      <th className="td-checkbox" style={{ width: '3rem', textAlign: 'center' }}>
                         <input
                           type="checkbox"
                           aria-label="Select all"
@@ -666,9 +667,25 @@ export default function Home() {
                         duration = m > 0 ? `${m}m ${s}s` : `${s}s`;
                       }
 
+                      let pressTimer: ReturnType<typeof setTimeout>;
+
                       return (
-                        <tr key={log.id} className={selectedLogs.includes(log.id) ? 'selected' : ''}>
-                          <td style={{ textAlign: 'center' }}>
+                        <tr 
+                          key={log.id} 
+                          className={selectedLogs.includes(log.id) ? 'selected' : ''}
+                          onTouchStart={() => {
+                            pressTimer = setTimeout(() => {
+                              toggleLogSelection(log.id);
+                              if (isVibrationEnabled && navigator.vibrate) navigator.vibrate(50);
+                            }, 500);
+                          }}
+                          onTouchEnd={() => clearTimeout(pressTimer)}
+                          onTouchMove={() => clearTimeout(pressTimer)}
+                          onContextMenu={(e) => {
+                            if (window.innerWidth <= 640) e.preventDefault();
+                          }}
+                        >
+                          <td className="td-checkbox" style={{ textAlign: 'center' }}>
                             <input
                               type="checkbox"
                               aria-label="Select log"

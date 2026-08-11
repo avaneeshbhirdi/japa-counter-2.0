@@ -1153,6 +1153,18 @@ body {
     opacity: 1;
   }
 
+  .td-checkbox {
+    display: none;
+  }
+  
+  .mobile-hint {
+    display: block;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+
   .nav-bar {
     padding: 1rem 1rem;
   }
