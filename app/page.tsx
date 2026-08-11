@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { User } from '@supabase/supabase-js';
+import FeatherIcon from './components/FeatherIcon';
 
 const MAX_COUNT = 108;
 
@@ -609,7 +610,9 @@ export default function Home() {
                       <div style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(160,175,210,0.6)', fontWeight: 600, marginBottom: '0.4rem' }}>Lifetime Stats</div>
                       <div className="stat-row">
                         <span className="stat-label">Current Streak</span>
-                        <span className="stat-value" style={{ color: '#c89b3c', fontWeight: 600 }}>🪶 {currentStreak}</span>
+                        <span className="stat-value" style={{ color: '#c89b3c', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                          <FeatherIcon streak={currentStreak} size={14} /> {currentStreak}
+                        </span>
                       </div>
                       <div className="stat-row">
                         <span className="stat-label">Total Rounds</span>
@@ -708,7 +711,7 @@ export default function Home() {
                     <h2 className="log-title" style={{ margin: 0 }}>Sadhana Calendar</h2>
                     {currentStreak > 0 && (
                       <span className="streak-badge">
-                        🪶 {currentStreak}
+                        <FeatherIcon streak={currentStreak} size={16} /> {currentStreak}
                       </span>
                     )}
                   </div>
@@ -935,7 +938,7 @@ export default function Home() {
                                   <span style={{ fontWeight: isMe ? 600 : 400, color: '#fff' }}>{entry.full_name || 'Anonymous Devotee'}</span>
                                   {(entry.current_streak && entry.current_streak > 0) ? (
                                     <span className="streak-badge" style={{ marginTop: 0, padding: '0.1rem 0.4rem', fontSize: '0.65rem' }}>
-                                      🪶 {entry.current_streak}
+                                      <FeatherIcon streak={entry.current_streak} size={12} /> {entry.current_streak}
                                     </span>
                                   ) : null}
                                 </div>
