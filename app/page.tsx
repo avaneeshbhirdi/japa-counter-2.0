@@ -652,7 +652,7 @@ export default function Home() {
                       try {
                         const d = log.created_at ? new Date(log.created_at) : new Date(`${log.date}T${log.time}`);
                         if (!isNaN(d.getTime())) {
-                          dateStr = new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }).format(d);
+                          dateStr = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: '2-digit' }).format(d);
                           timeStr = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).format(d);
                         }
                       } catch { /* fallback */ }
