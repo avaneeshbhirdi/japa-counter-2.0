@@ -924,7 +924,7 @@ export default function Home() {
                   <tbody>
                     {leaderboardData.map((entry, index) => {
                       const rank = index + 1;
-                      let rankDisplay: React.ReactNode = `#${rank}`;
+                      let rankDisplay: React.ReactNode = <span style={{ color: 'rgba(255, 255, 255, 0.7)' }}>#{rank}</span>;
                       if (rank === 1) rankDisplay = <span className="medal gold" title="1st Place">🥇</span>;
                       if (rank === 2) rankDisplay = <span className="medal silver" title="2nd Place">🥈</span>;
                       if (rank === 3) rankDisplay = <span className="medal bronze" title="3rd Place">🥉</span>;
