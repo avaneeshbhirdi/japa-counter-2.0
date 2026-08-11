@@ -1123,8 +1123,34 @@ body {
   .counter-number { font-size: 3.75rem; }
 
   .log-panel {
-    left: 0.5rem;
-    width: calc(100vw - 1rem);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    max-width: 100vw;
+    border-radius: 0;
+    z-index: 40; /* Below nav-bar which is 50 */
+    background: #08091e; /* Solid background to hide what's underneath */
+    padding: 5rem 1rem 2rem 1rem;
+    transform: translateX(-100%);
+    opacity: 1;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: none;
+    box-shadow: none;
+    overflow-y: auto;
+  }
+
+  .log-panel.log-visible {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .log-panel.log-hidden {
+    transform: translateX(-100%);
+    opacity: 1;
   }
 
   .nav-bar {
