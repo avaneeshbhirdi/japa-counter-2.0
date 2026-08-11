@@ -608,6 +608,10 @@ export default function Home() {
                     <div style={{ marginBottom: '0.25rem' }}>
                       <div style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(160,175,210,0.6)', fontWeight: 600, marginBottom: '0.4rem' }}>Lifetime Stats</div>
                       <div className="stat-row">
+                        <span className="stat-label">Current Streak</span>
+                        <span className="stat-value" style={{ color: '#c89b3c', fontWeight: 600 }}>🪶 {currentStreak}</span>
+                      </div>
+                      <div className="stat-row">
                         <span className="stat-label">Total Rounds</span>
                         <span className="stat-value-rounds">{lifetimeRounds}</span>
                       </div>
