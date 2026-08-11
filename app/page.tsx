@@ -64,6 +64,9 @@ export default function Home() {
   const [userCity, setUserCity] = useState('');
   const [isLeaderboardRefreshing, setIsLeaderboardRefreshing] = useState(false);
 
+  // ── Settings ─────────────────────────────────────────────────────────────
+  const [isVibrationEnabled, setIsVibrationEnabled] = useState(true);
+
   // ── Refs ─────────────────────────────────────────────────────────────────
   const supabase = createClient();
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -74,6 +77,12 @@ export default function Home() {
   const currentTimerRef = useRef(timerSeconds);
 
   useEffect(() => { currentTimerRef.current = timerSeconds; }, [timerSeconds]);
+
+  // Load local settings
+  useEffect(() => {
+    const savedVibe = localStorage.getItem('japa_vibration');
+    if (savedVibe !== null) setIsVibrationEnabled(savedVibe === 'true');
+  }, []);
 
   // ── Auth Listener ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -168,10 +177,16 @@ export default function Home() {
   }, [initAudio]);
 
   const vibrateDevice = useCallback(() => {
-    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+    if (isVibrationEnabled && typeof navigator !== 'undefined' && navigator.vibrate) {
       navigator.vibrate([200, 100, 200]);
     }
-  }, []);
+  }, [isVibrationEnabled]);
+
+  const vibrateTap = useCallback(() => {
+    if (isVibrationEnabled && typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate(30); // Very short tap vibration
+    }
+  }, [isVibrationEnabled]);
 
   // ── Timer ────────────────────────────────────────────────────────────────
   const formatTime = (secs: number) => {
@@ -284,6 +299,8 @@ export default function Home() {
       setCurrentCount(next);
       setTotalCount(prev => prev + 1);
 
+      vibrateTap();
+
       const numEl = counterNumberRef.current;
       if (numEl) {
         numEl.classList.add('count-popping');
@@ -292,7 +309,7 @@ export default function Home() {
 
       if (next === MAX_COUNT) completeRound();
     }
-  }, [timerSeconds, isTimerRunning, startTimer, isRoundComplete, currentCount, completeRound, initAudio]);
+  }, [timerSeconds, isTimerRunning, startTimer, isRoundComplete, currentCount, completeRound, initAudio, vibrateTap]);
 
   const handleReset = useCallback(() => {
     if (confirm('Reset session progress? This will reset the count, rounds, and timer to 0.')) {
@@ -522,6 +539,36 @@ export default function Home() {
                       <div className="stat-row">
                         <span className="stat-label">Total Count</span>
                         <span className="stat-value-counts">{lifetimeCounts}</span>
+                      </div>
+                    </div>
+
+                    <div style={{ padding: '0.75rem 0', borderTop: '1px solid rgba(255,255,255,0.08)', marginBottom: '0.25rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.8)' }}>Haptic Vibration</span>
+                        <button 
+                          style={{
+                            background: isVibrationEnabled ? '#c89b3c' : 'rgba(255,255,255,0.1)',
+                            border: 'none',
+                            borderRadius: '20px',
+                            width: '40px',
+                            height: '22px',
+                            position: 'relative',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                          }}
+                          onClick={() => {
+                            const next = !isVibrationEnabled;
+                            setIsVibrationEnabled(next);
+                            localStorage.setItem('japa_vibration', String(next));
+                            if (next && navigator.vibrate) navigator.vibrate(30);
+                          }}
+                        >
+                          <div style={{
+                            width: '18px', height: '18px', background: '#fff', borderRadius: '50%',
+                            position: 'absolute', top: '2px', left: isVibrationEnabled ? '20px' : '2px',
+                            transition: 'all 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.3)'
+                          }} />
+                        </button>
                       </div>
                     </div>
 
