@@ -1117,6 +1117,55 @@ body {
 }
 
 /* ================================
+   LEADERBOARD
+   ================================ */
+.leaderboard-tab {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.6);
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.leaderboard-tab:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.leaderboard-tab.active {
+  background: rgba(200, 155, 60, 0.2);
+  border-color: rgba(200, 155, 60, 0.4);
+  color: #c89b3c;
+}
+
+.leaderboard-tab:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.leaderboard-table {
+  border-spacing: 0 0.25rem;
+  border-collapse: separate;
+}
+
+.leaderboard-me {
+  background: linear-gradient(90deg, rgba(200, 155, 60, 0.08) 0%, rgba(200, 155, 60, 0.15) 50%, rgba(200, 155, 60, 0.08) 100%);
+  position: relative;
+}
+
+.leaderboard-me td:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+.leaderboard-me td:last-child { border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
+
+.medal {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+/* ================================
    ANIMATIONS
    ================================ */
 @keyframes count-pop {

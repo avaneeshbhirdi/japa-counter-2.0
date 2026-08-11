@@ -17,6 +17,15 @@ interface SadhanaLog {
   created_at?: string;
 }
 
+interface LeaderboardEntry {
+  id: string;
+  full_name: string;
+  avatar_url: string;
+  city: string;
+  total_rounds: number;
+  total_counts: number;
+}
+
 export default function Home() {
   // ── Counter State ────────────────────────────────────────────────────────
   const [currentCount, setCurrentCount] = useState(0);
@@ -41,11 +50,18 @@ export default function Home() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [editName, setEditName] = useState('');
+  const [editCity, setEditCity] = useState('');
   const [editAvatarFile, setEditAvatarFile] = useState<File | null>(null);
   const [editAvatarPreview, setEditAvatarPreview] = useState<string | null>(null);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [selectedLogs, setSelectedLogs] = useState<string[]>([]);
   const [isDeletingLogs, setIsDeletingLogs] = useState(false);
+  
+  // ── Leaderboard State ────────────────────────────────────────────────────
+  const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
+  const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
+  const [leaderboardTab, setLeaderboardTab] = useState<'global' | 'city'>('global');
+  const [userCity, setUserCity] = useState('');
 
   // ── Refs ─────────────────────────────────────────────────────────────────
   const supabase = createClient();
@@ -63,6 +79,11 @@ export default function Home() {
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
+      if (user) {
+        // Fetch user's profile to get their city
+        const { data } = await supabase.from('profiles').select('city').eq('id', user.id).single();
+        if (data?.city) setUserCity(data.city);
+      }
     };
     getUser();
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -90,6 +111,25 @@ export default function Home() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
+
+  // ── Fetch Leaderboard ────────────────────────────────────────────────────
+  const fetchLeaderboard = useCallback(async () => {
+    let query = supabase.from('leaderboard').select('*').order('total_rounds', { ascending: false }).limit(100);
+    
+    if (leaderboardTab === 'city' && userCity) {
+      query = query.ilike('city', userCity);
+    }
+    
+    const { data, error } = await query;
+    if (!error && data) {
+      setLeaderboardData(data as LeaderboardEntry[]);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [leaderboardTab, userCity]);
+
+  useEffect(() => {
+    if (isLeaderboardOpen) void fetchLeaderboard();
+  }, [isLeaderboardOpen, leaderboardTab, fetchLeaderboard]);
 
   useEffect(() => {
     if (user) void fetchLogs();
@@ -289,8 +329,21 @@ export default function Home() {
           avatarUrl = urlData.publicUrl;
         }
       }
+      
+      // Update Auth metadata
       const { error } = await supabase.auth.updateUser({ data: { full_name: editName, avatar_url: avatarUrl } });
       if (error) throw error;
+      
+      // Update Profiles table (for leaderboard)
+      const { error: profileError } = await supabase.from('profiles').upsert({
+        id: user.id,
+        full_name: editName,
+        avatar_url: avatarUrl,
+        city: editCity.trim() || null
+      });
+      if (profileError) throw profileError;
+      
+      setUserCity(editCity.trim());
       setIsEditingProfile(false);
     } catch (e) {
       console.error(e);
@@ -368,12 +421,20 @@ export default function Home() {
       <nav className="nav-bar">
         <div className="nav-left">
           {user && (
-            <button
-              className="nav-btn primary"
-              onClick={() => setIsLogOpen(prev => !prev)}
-            >
-              {isLogOpen ? 'Close Log' : 'Sadhana Log'}
-            </button>
+            <>
+              <button
+                className="nav-btn primary"
+                onClick={() => { setIsLogOpen(prev => !prev); setIsLeaderboardOpen(false); }}
+              >
+                {isLogOpen ? 'Close Log' : 'Sadhana Log'}
+              </button>
+              <button
+                className="nav-btn primary"
+                onClick={() => { setIsLeaderboardOpen(prev => !prev); setIsLogOpen(false); }}
+              >
+                {isLeaderboardOpen ? 'Close Leaderboard' : 'Leaderboard'}
+              </button>
+            </>
           )}
         </div>
 
@@ -424,6 +485,10 @@ export default function Home() {
                       <label>Full Name</label>
                       <input type="text" value={editName} onChange={e => setEditName(e.target.value)} placeholder="Your Name" />
                     </div>
+                    <div className="edit-field" style={{ marginBottom: '0.75rem' }}>
+                      <label>City</label>
+                      <input type="text" value={editCity} onChange={e => setEditCity(e.target.value)} placeholder="E.g. Mumbai, New York" />
+                    </div>
                     <div className="edit-actions">
                       <button className="btn-cancel" disabled={isSavingProfile} onClick={() => { setIsEditingProfile(false); setEditAvatarFile(null); setEditAvatarPreview(null); }}>Cancel</button>
                       <button className="btn-save" disabled={isSavingProfile} onClick={handleSaveProfile}>{isSavingProfile ? 'Saving…' : 'Save'}</button>
@@ -438,11 +503,12 @@ export default function Home() {
                       <div style={{ minWidth: 0, flex: 1 }}>
                         <div className="profile-name">{displayName}</div>
                         <div className="profile-email">{user.email}</div>
+                        {userCity && <div className="profile-city" style={{ fontSize: '0.7rem', color: '#c89b3c', marginTop: '2px' }}>📍 {userCity}</div>}
                       </div>
                       <button
                         className="edit-btn"
                         title="Edit profile"
-                        onClick={() => { setEditName(displayName); setIsEditingProfile(true); }}
+                        onClick={() => { setEditName(displayName); setEditCity(userCity); setIsEditingProfile(true); }}
                       >
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
@@ -573,6 +639,91 @@ export default function Home() {
                           <td className="td-counts">{reqCounts}</td>
                           <td className="td-breakdown">{breakdown}</td>
                           <td className="td-duration">{duration}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── Leaderboard Panel ── */}
+      {user && (
+        <div className={`log-panel ${isLeaderboardOpen ? 'log-visible' : 'log-hidden'}`}>
+          <div className="log-stats-bar" style={{ justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <button 
+                className={`leaderboard-tab ${leaderboardTab === 'global' ? 'active' : ''}`}
+                onClick={() => setLeaderboardTab('global')}
+              >
+                Global
+              </button>
+              <button 
+                className={`leaderboard-tab ${leaderboardTab === 'city' ? 'active' : ''}`}
+                onClick={() => setLeaderboardTab('city')}
+                disabled={!userCity}
+                title={!userCity ? 'Set your city in profile first' : ''}
+              >
+                My City {userCity && `(${userCity})`}
+              </button>
+            </div>
+            <button 
+              className="log-delete-btn" 
+              onClick={fetchLeaderboard}
+              title="Refresh"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" />
+              </svg>
+            </button>
+          </div>
+
+          <div className="log-table-card">
+            <h2 className="log-title">Leaderboard {leaderboardTab === 'city' && userCity ? `- ${userCity}` : ''}</h2>
+            {leaderboardData.length === 0 ? (
+              <div className="log-empty">No devotees found on the leaderboard yet.</div>
+            ) : (
+              <div style={{ overflowX: 'auto' }}>
+                <table className="log-table leaderboard-table">
+                  <thead>
+                    <tr>
+                      <th style={{ width: '4rem', textAlign: 'center' }}>Rank</th>
+                      <th>Devotee</th>
+                      <th>Total Rounds</th>
+                      <th>Total Counts</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {leaderboardData.map((entry, index) => {
+                      const rank = index + 1;
+                      let rankDisplay: React.ReactNode = `#${rank}`;
+                      if (rank === 1) rankDisplay = <span className="medal gold" title="1st Place">🥇</span>;
+                      if (rank === 2) rankDisplay = <span className="medal silver" title="2nd Place">🥈</span>;
+                      if (rank === 3) rankDisplay = <span className="medal bronze" title="3rd Place">🥉</span>;
+
+                      const isMe = entry.id === user.id;
+
+                      return (
+                        <tr key={entry.id} className={isMe ? 'leaderboard-me' : ''}>
+                          <td style={{ textAlign: 'center', fontWeight: 'bold' }}>{rankDisplay}</td>
+                          <td>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                              <div className="profile-avatar-sm" style={{ width: '2rem', height: '2rem', fontSize: '0.9rem' }}>
+                                {entry.avatar_url ? <img src={entry.avatar_url} alt="Avatar" /> : (entry.full_name?.charAt(0).toUpperCase() || 'U')}
+                              </div>
+                              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontWeight: isMe ? 600 : 400 }}>{entry.full_name || 'Anonymous Devotee'}</span>
+                                {leaderboardTab === 'global' && entry.city && (
+                                  <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)' }}>{entry.city}</span>
+                                )}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="td-counts" style={{ color: '#c89b3c' }}>{entry.total_rounds}</td>
+                          <td className="td-duration">{entry.total_counts}</td>
                         </tr>
                       );
                     })}
