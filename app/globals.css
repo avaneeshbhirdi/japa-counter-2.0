@@ -52,6 +52,8 @@ body {
     radial-gradient(2px 2px at 33% 43%, rgba(255,255,255,0.4), transparent),
     radial-gradient(1px 1px at 90% 12%, rgba(255,255,255,0.7), transparent);
   animation: twinkle 8s ease-in-out infinite alternate;
+  will-change: opacity;
+  transform: translateZ(0);
 }
 
 @keyframes twinkle {
@@ -592,7 +594,15 @@ body {
   justify-content: center;
   cursor: pointer;
   border: 1px solid rgba(255, 255, 255, 0.09);
-  background: radial-gradient(circle at 45% 35%, rgba(28, 38, 90, 0.5), rgba(10, 14, 40, 0.85));
+  
+  /* Performance optimization: use CSS variable for progress */
+  background: 
+    conic-gradient(
+      rgba(80, 120, 240, 0.45) var(--progress-deg, 0deg),
+      rgba(18, 26, 68, 0.7) var(--progress-deg, 0deg)
+    ),
+    radial-gradient(circle at 45% 35%, rgba(28, 38, 90, 0.5), rgba(10, 14, 40, 0.85));
+
   box-shadow:
     0 10px 50px rgba(0, 0, 0, 0.55),
     inset 0 1px 20px rgba(255, 255, 255, 0.04);
@@ -1070,6 +1080,12 @@ body {
   .page-container {
     gap: 0.875rem;
     padding: 5rem 0.75rem 1rem;
+  }
+  
+  /* Reduce blur on mobile for performance */
+  .mantra-panel, .log-panel, .profile-dropdown {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
   }
 
   .mantra-panel {

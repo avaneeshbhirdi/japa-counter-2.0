@@ -385,16 +385,10 @@ export default function Home() {
   const progress = currentCount / MAX_COUNT;
   const degrees = progress * 360;
   const circleStyle: React.CSSProperties = {
-    background: `
-      conic-gradient(
-        rgba(80, 120, 240, 0.45) ${degrees}deg,
-        rgba(18, 26, 68, 0.7) ${degrees}deg
-      ),
-      radial-gradient(circle at 45% 35%, rgba(28, 38, 90, 0.5), rgba(10, 14, 40, 0.85))
-    `,
+    '--progress-deg': `${degrees}deg`,
     opacity: (!isTimerRunning && !(totalCount === 0 && timerSeconds === 0)) ? 0.55 : 1,
     cursor: (!isTimerRunning && !(totalCount === 0 && timerSeconds === 0)) ? 'not-allowed' : 'pointer',
-  };
+  } as React.CSSProperties;
 
   // ── Avatar helpers ───────────────────────────────────────────────────────
   const avatarUrl = user?.user_metadata?.avatar_url;
@@ -798,12 +792,10 @@ export default function Home() {
             className="counter-circle"
             ref={counterCircleRef}
             style={circleStyle}
-            onClick={incrementCount}
             onPointerDown={e => {
-              if (e.pointerType === 'touch') {
-                e.preventDefault();
-                incrementCount();
-              }
+              // Handle both mouse and touch, prevent double-firing
+              e.preventDefault();
+              incrementCount();
             }}
             role="button"
             aria-label={`Count: ${currentCount}. Click or press Space to increment.`}
