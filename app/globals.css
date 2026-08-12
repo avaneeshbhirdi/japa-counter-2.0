@@ -15,7 +15,7 @@ body {
   width: 100%;
   min-height: 100vh;
   position: relative;
-  background: #0c1230;
+  background: #0e2236;
 }
 
 /* ================================
@@ -26,9 +26,9 @@ body {
   inset: 0;
   z-index: 0;
   background:
-    radial-gradient(ellipse 70% 80% at 85% 90%, rgba(80, 20, 120, 0.55) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 60% at 15% 10%, rgba(30, 40, 120, 0.4) 0%, transparent 55%),
-    radial-gradient(ellipse 100% 100% at 50% 50%, #0c1230 0%, #08091e 100%);
+    radial-gradient(ellipse 70% 80% at 85% 90%, rgba(20, 80, 110, 0.55) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 15% 10%, rgba(20, 80, 120, 0.45) 0%, transparent 55%),
+    radial-gradient(ellipse 100% 100% at 50% 50%, #0e2236 0%, #0a1a2c 100%);
 }
 
 /* Twinkling stars */
@@ -67,8 +67,8 @@ body {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 60% 40% at 80% 85%, rgba(100, 30, 160, 0.18) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 30% at 20% 20%, rgba(40, 60, 180, 0.12) 0%, transparent 50%);
+    radial-gradient(ellipse 60% 40% at 80% 85%, rgba(20, 100, 140, 0.25) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 20% 20%, rgba(20, 80, 130, 0.2) 0%, transparent 50%);
   opacity: 0.9;
 }
 
@@ -92,13 +92,13 @@ body {
    GLASSMORPHISM BASE
    ================================ */
 .glass {
-  background: rgba(12, 20, 58, 0.55);
+  background: rgba(20, 60, 90, 0.45);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    0 8px 32px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 /* ================================
@@ -174,29 +174,29 @@ body {
   cursor: pointer;
   transition: all 0.25s ease;
   font-family: var(--font-inter), sans-serif;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(10, 15, 50, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(20, 60, 90, 0.55);
   backdrop-filter: blur(12px);
-  color: rgba(200, 210, 240, 0.85);
+  color: rgba(220, 235, 255, 0.9);
   text-decoration: none;
   display: inline-flex;
   align-items: center;
 }
 
 .nav-btn:hover {
-  background: rgba(30, 40, 100, 0.7);
-  border-color: rgba(120, 140, 255, 0.3);
+  background: rgba(30, 80, 120, 0.75);
+  border-color: rgba(100, 180, 230, 0.4);
   color: #fff;
 }
 
 .nav-btn.primary {
-  background: rgba(80, 60, 180, 0.5);
-  border-color: rgba(130, 110, 240, 0.4);
-  color: #e0d8ff;
+  background: rgba(20, 90, 130, 0.65);
+  border-color: rgba(80, 170, 220, 0.45);
+  color: #d6f0ff;
 }
 
 .nav-btn.primary:hover {
-  background: rgba(80, 60, 180, 0.75);
+  background: rgba(20, 90, 130, 0.85);
 }
 
 /* Profile avatar button */
@@ -236,12 +236,12 @@ body {
   top: calc(100% + 0.75rem);
   right: 0;
   width: 17rem;
-  background: rgba(8, 12, 38, 0.92);
+  background: rgba(14, 50, 75, 0.94);
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 1.25rem;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
   padding: 1.25rem;
   transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform-origin: top right;
@@ -446,13 +446,13 @@ body {
   text-align: center;
   padding: 1.25rem 3.5rem;
   border-radius: 1.25rem;
-  background: rgba(12, 18, 52, 0.52);
+  background: rgba(18, 60, 90, 0.5);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    0 4px 24px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09);
   width: 100%;
   min-width: min(860px, 92vw);
   max-width: 92vw;
@@ -505,16 +505,16 @@ body {
 .dashboard-bar {
   display: flex;
   align-items: center;
-  background: rgba(10, 15, 48, 0.72);
+  background: rgba(18, 60, 90, 0.65);
   backdrop-filter: blur(22px);
   -webkit-backdrop-filter: blur(22px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 9999px;
   padding: 0.6rem 1.75rem;
   gap: 1.5rem;
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .db-timer-section {
@@ -634,10 +634,10 @@ body {
   /* Performance optimization: use CSS variable for progress */
   background: 
     conic-gradient(
-      rgba(80, 120, 240, 0.45) var(--progress-deg, 0deg),
-      rgba(18, 26, 68, 0.7) var(--progress-deg, 0deg)
+      rgba(40, 160, 210, 0.55) var(--progress-deg, 0deg),
+      rgba(18, 55, 80, 0.65) var(--progress-deg, 0deg)
     ),
-    radial-gradient(circle at 45% 35%, rgba(28, 38, 90, 0.5), rgba(10, 14, 40, 0.85));
+    radial-gradient(circle at 45% 35%, rgba(22, 70, 105, 0.6), rgba(10, 35, 55, 0.88));
 
   box-shadow:
     0 10px 50px rgba(0, 0, 0, 0.55),
@@ -722,10 +722,10 @@ body {
 .log-panel::-webkit-scrollbar-thumb { background: rgba(100, 130, 255, 0.25); border-radius: 2px; }
 
 .log-stats-bar {
-  background: rgba(10, 15, 48, 0.82);
+  background: rgba(18, 60, 90, 0.75);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 1.25rem;
   padding: 1rem 1.5rem;
   display: flex;
@@ -733,7 +733,7 @@ body {
   justify-content: space-around;
   gap: 1rem;
   flex-wrap: wrap;
-  box-shadow: 0 0 40px rgba(15, 10, 50, 0.8);
+  box-shadow: 0 0 40px rgba(10, 30, 50, 0.5);
 }
 
 .log-stat-item {
@@ -797,13 +797,13 @@ body {
 }
 
 .log-table-card {
-  background: rgba(10, 15, 48, 0.75);
+  background: rgba(18, 58, 88, 0.72);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 1.5rem;
   padding: 1.5rem;
-  box-shadow: 0 0 40px rgba(15, 10, 50, 0.6);
+  box-shadow: 0 0 40px rgba(10, 30, 50, 0.45);
 }
 
 .log-title {
@@ -875,7 +875,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(8, 12, 35, 0.88);
+  background: rgba(10, 30, 50, 0.88);
   backdrop-filter: blur(12px);
   opacity: 0;
   pointer-events: none;
@@ -926,15 +926,15 @@ body {
   z-index: 10;
   width: 100%;
   max-width: 24rem;
-  background: rgba(10, 15, 48, 0.82);
+  background: rgba(14, 50, 80, 0.88);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 1.5rem;
   padding: 2rem;
   box-shadow:
-    0 24px 80px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    0 24px 80px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .login-header {
@@ -1170,7 +1170,7 @@ body {
     max-width: 100vw;
     border-radius: 0;
     z-index: 40; /* Below nav-bar which is 50 */
-    background: #08091e; /* Solid background to hide what's underneath */
+    background: #0e2236; /* Solid background to hide what's underneath */
     padding: 5rem 1rem 2rem 1rem;
     transform: translateX(-100%);
     opacity: 1;
