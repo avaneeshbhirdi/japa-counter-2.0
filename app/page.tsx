@@ -31,6 +31,7 @@ interface LeaderboardEntry {
 export default function Home() {
   // ── Counter State ────────────────────────────────────────────────────────
   const [currentCount, setCurrentCount] = useState(0);
+  const [hasStartedChanting, setHasStartedChanting] = useState(false);
   const [roundsCompleted, setRoundsCompleted] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [isRoundComplete, setIsRoundComplete] = useState(false);
@@ -347,6 +348,13 @@ export default function Home() {
   }, [playBell, vibrateDevice]);
 
   const incrementCount = useCallback(() => {
+    if (!hasStartedChanting) {
+      setHasStartedChanting(true);
+      startTimer();
+      initAudio();
+      return;
+    }
+
     const isFresh = timerSeconds === 0 && !isTimerRunning;
 
     if (isFresh) {
@@ -385,7 +393,7 @@ export default function Home() {
 
       if (next === MAX_COUNT) completeRound();
     }
-  }, [timerSeconds, isTimerRunning, startTimer, isRoundComplete, currentCount, completeRound, initAudio, vibrateTap]);
+  }, [timerSeconds, isTimerRunning, startTimer, isRoundComplete, currentCount, completeRound, initAudio, vibrateTap, hasStartedChanting]);
 
   const handleReset = useCallback(() => {
     if (confirm('Reset session progress? This will reset the count, rounds, and timer to 0.')) {
@@ -393,6 +401,7 @@ export default function Home() {
       setTotalCount(0);
       setRoundsCompleted(0);
       setIsRoundComplete(false);
+      setHasStartedChanting(false);
       setCurrentLogId(null); // Start a new log entry after reset
       resetTimer();
     }
@@ -1022,7 +1031,9 @@ export default function Home() {
             aria-label={`Count: ${currentCount}. Click or press Space to increment.`}
             tabIndex={0}
           >
-            <div className="counter-number" ref={counterNumberRef}>{currentCount}</div>
+            <div className="counter-number" ref={counterNumberRef} style={!hasStartedChanting ? { fontSize: '4.5rem' } : undefined}>
+              {hasStartedChanting ? currentCount : 'Start'}
+            </div>
             <div className="counter-hint">
               {typeof window !== 'undefined' && 'ontouchstart' in window ? 'Tap to Chant' : 'Press Space'}
             </div>
