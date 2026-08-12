@@ -140,17 +140,18 @@ body {
 }
 
 .logo-img {
-  width: 44px;
-  height: 44px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   object-fit: contain;
   flex-shrink: 0;
 }
 
 .logo-text {
-  font-size: 0.85rem;
+  font-family: var(--font-cinzel), serif;
+  font-size: 1rem;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.15em;
   color: #f1e2c3;
   text-transform: uppercase;
 }
@@ -958,7 +959,7 @@ body {
   font-family: var(--font-cinzel), serif;
   font-size: 1.4rem;
   font-weight: 700;
-  color: #fff;
+  color: #f1e2c3;
   letter-spacing: 0.08em;
   margin-bottom: 0.3rem;
 }

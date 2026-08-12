@@ -23,7 +23,7 @@ export default async function LoginPage({
                         <img
                             src="/logo.png"
                             alt="Japa Counter Logo"
-                            style={{ width: '80px', height: '80px', objectFit: 'contain', marginBottom: '0.75rem' }}
+                            style={{ width: '100px', height: '100px', objectFit: 'contain', marginBottom: '0.75rem' }}
                         />
                     </a>
                     <h1 className="login-title">
