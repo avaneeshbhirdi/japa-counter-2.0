@@ -494,8 +494,8 @@ body {
   font-size: 1.15rem;
   font-weight: 600;
   line-height: 1.65;
-  color: #c89b3c;
-  text-shadow: 0 0 18px rgba(200, 155, 60, 0.3);
+  color: #f1e2c3;
+  text-shadow: 0 0 18px rgba(241, 226, 195, 0.25);
   letter-spacing: 0.04em;
 }
 
@@ -528,7 +528,7 @@ body {
   font-family: var(--font-cinzel), serif;
   font-size: 1.15rem;
   font-weight: 600;
-  color: #f5c842;
+  color: #f1e2c3;
   line-height: 1;
   margin-bottom: 0.3rem;
   letter-spacing: 0.04em;
