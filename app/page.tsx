@@ -510,22 +510,10 @@ export default function Home() {
       {/* ── Nav Bar ── */}
       <nav className="nav-bar">
         <div className="nav-left">
-          {user && (
-            <>
-              <button
-                className="nav-btn primary"
-                onClick={() => { setIsLogOpen(prev => !prev); setIsLeaderboardOpen(false); }}
-              >
-                {isLogOpen ? 'Close Log' : 'Sadhana Log'}
-              </button>
-              <button
-                className="nav-btn primary"
-                onClick={() => { setIsLeaderboardOpen(prev => !prev); setIsLogOpen(false); }}
-              >
-                {isLeaderboardOpen ? 'Close Leaderboard' : 'Leaderboard'}
-              </button>
-            </>
-          )}
+          <div className="nav-logo">
+            <img src="/logo.png" alt="JapaCounter Logo" className="logo-img" />
+            <span className="logo-text">JAPACOUNTER</span>
+          </div>
         </div>
 
         <div className="nav-right">
@@ -1041,6 +1029,30 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Bottom fixed buttons */}
+      {user && (
+        <>
+          <div className="bottom-left-btn">
+            <button
+              className="nav-btn primary"
+              style={{ padding: '0.75rem 1.5rem', fontSize: '0.85rem' }}
+              onClick={() => { setIsLogOpen(prev => !prev); setIsLeaderboardOpen(false); }}
+            >
+              {isLogOpen ? 'Close Log' : 'Sadhana Log'}
+            </button>
+          </div>
+          <div className="bottom-right-btn">
+            <button
+              className="nav-btn primary"
+              style={{ padding: '0.75rem 1.5rem', fontSize: '0.85rem' }}
+              onClick={() => { setIsLeaderboardOpen(prev => !prev); setIsLogOpen(false); }}
+            >
+              {isLeaderboardOpen ? 'Close Leaderboard' : 'Leaderboard'}
+            </button>
+          </div>
+        </>
+      )}
     </>
   );
 }
