@@ -19,8 +19,18 @@ export default async function LoginPage({
             <div className="login-card">
                 {/* Logo / Title */}
                 <div className="login-header">
-                    <div className="login-om">☸</div>
-                    <h1 className="login-title">Japa Counter</h1>
+                    <a href="/" style={{ display: 'inline-block', textDecoration: 'none' }}>
+                        <img
+                            src="/logo.png"
+                            alt="Japa Counter Logo"
+                            style={{ width: '80px', height: '80px', objectFit: 'contain', marginBottom: '0.75rem' }}
+                        />
+                    </a>
+                    <h1 className="login-title">
+                        <a href="/" style={{ textDecoration: 'none', color: 'inherit', letterSpacing: '0.15em' }}>
+                            JAPA COUNTER
+                        </a>
+                    </h1>
                     <p className="login-subtitle">Hare Krishna Mantra Sadhana</p>
                 </div>
 

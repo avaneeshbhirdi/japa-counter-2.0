@@ -519,10 +519,10 @@ export default function Home() {
       {/* ── Nav Bar ── */}
       <nav className="nav-bar">
         <div className="nav-left">
-          <div className="nav-logo">
+          <a href="/" className="nav-logo" style={{ textDecoration: 'none' }}>
             <img src="/logo.png" alt="JapaCounter Logo" className="logo-img" />
-            <span className="logo-text">JAPACOUNTER</span>
-          </div>
+            <span className="logo-text">JAPA COUNTER</span>
+          </a>
         </div>
 
         <div className="nav-right">
