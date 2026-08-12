@@ -1031,7 +1031,7 @@ export default function Home() {
             aria-label={`Count: ${currentCount}. Click or press Space to increment.`}
             tabIndex={0}
           >
-            <div className="counter-number" ref={counterNumberRef} style={!hasStartedChanting ? { fontSize: '1.8rem', letterSpacing: '0.12em' } : undefined}>
+            <div className="counter-number" ref={counterNumberRef} style={!hasStartedChanting ? { fontSize: '1.6rem', letterSpacing: '0.25em' } : undefined}>
               {hasStartedChanting ? currentCount : 'Start'}
             </div>
             <div className="counter-hint">
@@ -1041,28 +1041,37 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Bottom fixed buttons */}
+      {/* Bottom-right floating action buttons */}
       {user && (
-        <>
-          <div className="bottom-left-btn">
-            <button
-              className="nav-btn primary"
-              style={{ padding: '0.75rem 1.5rem', fontSize: '0.85rem' }}
-              onClick={() => { setIsLogOpen(prev => !prev); setIsLeaderboardOpen(false); }}
-            >
-              {isLogOpen ? 'Close Log' : 'Sadhana Log'}
-            </button>
-          </div>
-          <div className="bottom-right-btn">
-            <button
-              className="nav-btn primary"
-              style={{ padding: '0.75rem 1.5rem', fontSize: '0.85rem' }}
-              onClick={() => { setIsLeaderboardOpen(prev => !prev); setIsLogOpen(false); }}
-            >
-              {isLeaderboardOpen ? 'Close Leaderboard' : 'Leaderboard'}
-            </button>
-          </div>
-        </>
+        <div className="fab-group">
+          <button
+            className={`fab-btn ${isLogOpen ? 'fab-active' : ''}`}
+            onClick={() => { setIsLogOpen(prev => !prev); setIsLeaderboardOpen(false); }}
+            title="Sadhana Log"
+            aria-label="Sadhana Log"
+          >
+            {/* Book icon */}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+            </svg>
+          </button>
+          <button
+            className={`fab-btn ${isLeaderboardOpen ? 'fab-active' : ''}`}
+            onClick={() => { setIsLeaderboardOpen(prev => !prev); setIsLogOpen(false); }}
+            title="Leaderboard"
+            aria-label="Leaderboard"
+          >
+            {/* Trophy icon */}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="8 21 12 17 16 21"/>
+              <line x1="12" y1="17" x2="12" y2="11"/>
+              <path d="M7 4H4a1 1 0 0 0-1 1v3a4 4 0 0 0 4 4h.5"/>
+              <path d="M17 4h3a1 1 0 0 1 1 1v3a4 4 0 0 1-4 4h-.5"/>
+              <path d="M8 4h8v7a4 4 0 0 1-8 0V4z"/>
+            </svg>
+          </button>
+        </div>
       )}
     </>
   );
