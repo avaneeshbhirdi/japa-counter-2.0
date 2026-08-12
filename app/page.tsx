@@ -1031,7 +1031,7 @@ export default function Home() {
             aria-label={`Count: ${currentCount}. Click or press Space to increment.`}
             tabIndex={0}
           >
-            <div className="counter-number" ref={counterNumberRef} style={!hasStartedChanting ? { fontSize: '4.5rem' } : undefined}>
+            <div className="counter-number" ref={counterNumberRef} style={!hasStartedChanting ? { fontSize: '1.8rem', letterSpacing: '0.12em' } : undefined}>
               {hasStartedChanting ? currentCount : 'Start'}
             </div>
             <div className="counter-hint">
