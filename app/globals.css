@@ -110,19 +110,34 @@ body {
   left: 0;
   right: 0;
   z-index: 50;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   padding: 1.25rem 2rem;
   pointer-events: none;
 }
 
-.nav-left,
+.nav-left {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  justify-content: flex-start;
+}
+
+.nav-center {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .nav-right {
   pointer-events: auto;
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  justify-content: flex-end;
 }
 
 /* ================================
@@ -161,19 +176,15 @@ body {
    FLOATING ACTION BUTTONS (FAB)
    ================================ */
 .fab-group {
-  position: fixed;
-  bottom: 1.75rem;
-  right: 1.75rem;
-  z-index: 50;
   display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  flex-direction: row;
+  gap: 0.625rem;
   align-items: center;
 }
 
 .fab-btn {
-  width: 3rem;
-  height: 3rem;
+  width: 2.375rem;
+  height: 2.375rem;
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.18);
   background: rgba(20, 60, 90, 0.75);

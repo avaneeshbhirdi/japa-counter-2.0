@@ -519,6 +519,40 @@ export default function Home() {
       {/* ── Nav Bar ── */}
       <nav className="nav-bar">
         <div className="nav-left">
+          {user && (
+            <div className="fab-group">
+              <button
+                className={`fab-btn ${isLogOpen ? 'fab-active' : ''}`}
+                onClick={() => { setIsLogOpen(prev => !prev); setIsLeaderboardOpen(false); }}
+                title="Sadhana Log"
+                aria-label="Sadhana Log"
+              >
+                {/* Book icon */}
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                </svg>
+              </button>
+              <button
+                className={`fab-btn ${isLeaderboardOpen ? 'fab-active' : ''}`}
+                onClick={() => { setIsLeaderboardOpen(prev => !prev); setIsLogOpen(false); }}
+                title="Leaderboard"
+                aria-label="Leaderboard"
+              >
+                {/* Trophy icon */}
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="8 21 12 17 16 21"/>
+                  <line x1="12" y1="17" x2="12" y2="11"/>
+                  <path d="M7 4H4a1 1 0 0 0-1 1v3a4 4 0 0 0 4 4h.5"/>
+                  <path d="M17 4h3a1 1 0 0 1 1 1v3a4 4 0 0 1-4 4h-.5"/>
+                  <path d="M8 4h8v7a4 4 0 0 1-8 0V4z"/>
+                </svg>
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div className="nav-center">
           <a href="/" className="nav-logo" style={{ textDecoration: 'none' }}>
             <img src="/logo.png" alt="JapaCounter Logo" className="logo-img" />
             <span className="logo-text">JAPA COUNTER</span>
@@ -1041,38 +1075,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Bottom-right floating action buttons */}
-      {user && (
-        <div className="fab-group">
-          <button
-            className={`fab-btn ${isLogOpen ? 'fab-active' : ''}`}
-            onClick={() => { setIsLogOpen(prev => !prev); setIsLeaderboardOpen(false); }}
-            title="Sadhana Log"
-            aria-label="Sadhana Log"
-          >
-            {/* Book icon */}
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-            </svg>
-          </button>
-          <button
-            className={`fab-btn ${isLeaderboardOpen ? 'fab-active' : ''}`}
-            onClick={() => { setIsLeaderboardOpen(prev => !prev); setIsLogOpen(false); }}
-            title="Leaderboard"
-            aria-label="Leaderboard"
-          >
-            {/* Trophy icon */}
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="8 21 12 17 16 21"/>
-              <line x1="12" y1="17" x2="12" y2="11"/>
-              <path d="M7 4H4a1 1 0 0 0-1 1v3a4 4 0 0 0 4 4h.5"/>
-              <path d="M17 4h3a1 1 0 0 1 1 1v3a4 4 0 0 1-4 4h-.5"/>
-              <path d="M8 4h8v7a4 4 0 0 1-8 0V4z"/>
-            </svg>
-          </button>
-        </div>
-      )}
+
     </>
   );
 }
