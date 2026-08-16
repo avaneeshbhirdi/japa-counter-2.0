@@ -50,6 +50,7 @@ export default function Home() {
 
   // ── UI State ─────────────────────────────────────────────────────────────
   const [isLogOpen, setIsLogOpen] = useState(false);
+  const [isInvocationCollapsed, setIsInvocationCollapsed] = useState(true);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -72,32 +73,40 @@ export default function Home() {
   const [currentCalendarMonth, setCurrentCalendarMonth] = useState<Date>(new Date());
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
 
-  // ── Panel Swipe State ────────────────────────────────────────────────────
-  const [touchStartY, setTouchStartY] = useState<number | null>(null);
-  const [touchCurrentY, setTouchCurrentY] = useState<number | null>(null);
+  // ── Global Swipe State ───────────────────────────────────────────────────
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [touchCurrentX, setTouchCurrentX] = useState<number | null>(null);
 
-  const handlePanelTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (e.currentTarget.scrollTop <= 5) {
-      setTouchStartY(e.touches[0].clientY);
+  const handleGlobalTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    setTouchStartX(e.touches[0].clientX);
+  };
+
+  const handleGlobalTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (touchStartX !== null) {
+      setTouchCurrentX(e.touches[0].clientX);
     }
   };
 
-  const handlePanelTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (touchStartY !== null) {
-      setTouchCurrentY(e.touches[0].clientY);
-    }
-  };
-
-  const handlePanelTouchEnd = () => {
-    if (touchStartY !== null && touchCurrentY !== null) {
-      if (touchCurrentY - touchStartY > 80) { // 80px swipe threshold
-        setIsLogOpen(false);
-        setIsLeaderboardOpen(false);
-        setIsMobileMenuOpen(true);
+  const handleGlobalTouchEnd = () => {
+    if (touchStartX !== null && touchCurrentX !== null) {
+      const deltaX = touchCurrentX - touchStartX;
+      
+      // Swipe Right (Open Menu) from left edge
+      if (deltaX > 60 && touchStartX < 40) {
+        if (!isLeaderboardOpen && !isLogOpen) {
+          setIsMobileMenuOpen(true);
+        }
+      }
+      
+      // Swipe Left (Close Panels/Menu)
+      if (deltaX < -60) {
+        if (isLeaderboardOpen) setIsLeaderboardOpen(false);
+        else if (isLogOpen) setIsLogOpen(false);
+        else if (isMobileMenuOpen) setIsMobileMenuOpen(false);
       }
     }
-    setTouchStartY(null);
-    setTouchCurrentY(null);
+    setTouchStartX(null);
+    setTouchCurrentX(null);
   };
 
   // ── Settings ─────────────────────────────────────────────────────────────
@@ -537,7 +546,12 @@ export default function Home() {
   // RENDER
   // ─────────────────────────────────────────────────────────────────────────
   return (
-    <>
+    <div 
+      style={{ width: '100%', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}
+      onTouchStart={handleGlobalTouchStart}
+      onTouchMove={handleGlobalTouchMove}
+      onTouchEnd={handleGlobalTouchEnd}
+    >
       {/* ── Cosmic Background ── */}
       <div className="cosmic-background">
         <div className="stars"></div>
@@ -821,13 +835,7 @@ export default function Home() {
 
       {/* ── Sadhana Log Panel ── */}
       {user && (
-        <div 
-          className={`log-panel ${isLogOpen ? 'log-visible' : 'log-hidden'}`}
-          onTouchStart={handlePanelTouchStart}
-          onTouchMove={handlePanelTouchMove}
-          onTouchEnd={handlePanelTouchEnd}
-        >
-          <div className="swipe-handle"></div>
+        <div className={`log-panel ${isLogOpen ? 'log-visible' : 'log-hidden'}`}>
           {/* Table / Calendar */}
           <div className="log-table-card">
             {!selectedDay ? (
@@ -1014,13 +1022,7 @@ export default function Home() {
 
       {/* ── Leaderboard Panel ── */}
       {user && (
-        <div 
-          className={`log-panel ${isLeaderboardOpen ? 'log-visible' : 'log-hidden'}`}
-          onTouchStart={handlePanelTouchStart}
-          onTouchMove={handlePanelTouchMove}
-          onTouchEnd={handlePanelTouchEnd}
-        >
-          <div className="swipe-handle"></div>
+        <div className={`log-panel ${isLeaderboardOpen ? 'log-visible' : 'log-hidden'}`}>
           <div className="log-stats-bar" style={{ justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button 
@@ -1129,12 +1131,24 @@ export default function Home() {
       <div className="page-container">
         {/* Mantra Panels */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem', width: '100%', alignItems: 'center' }}>
-          {/* Invocation — hidden on mobile via CSS */}
-          <div className="mantra-panel invocation-panel">
-            <div className="invocation-text">
-              Jaya Sri-Krishna-Chaitanya Prabhu Nityananda<br />
-              Sri-Adwaita Gadadhara Srivasadi-Gaura-Bhakta-Vrinda
-            </div>
+          {/* Invocation */}
+          <div 
+            className="mantra-panel invocation-panel" 
+            onClick={() => setIsInvocationCollapsed(!isInvocationCollapsed)}
+            style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
+          >
+            {isInvocationCollapsed ? (
+              <div className="invocation-text" style={{ whiteSpace: 'normal', letterSpacing: '0.12em', padding: '0.5rem 0' }}>
+                Sri Pancha Tattva Mantra...
+              </div>
+            ) : (
+              <div className="invocation-text" style={{ whiteSpace: 'normal', lineHeight: '1.7' }}>
+                Jaya Sri-Krishna-Chaitanya <br />
+                Prabhu Nityananda <br />
+                Sri-Adwaita Gadadhara <br />
+                Srivasadi-Gaura-Bhakta-Vrinda
+              </div>
+            )}
           </div>
 
           <div className="mantra-panel">
@@ -1203,6 +1217,6 @@ export default function Home() {
       </div>
 
 
-    </>
+    </div>
   );
 }
