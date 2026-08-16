@@ -10,7 +10,6 @@ interface FeatherIconProps {
 
 export default function FeatherIcon({ streak = 0, type, size = 18 }: FeatherIconProps) {
   let resolvedType: FeatherType = 'normal';
-
   if (type) {
     resolvedType = type;
   } else {
@@ -23,87 +22,178 @@ export default function FeatherIcon({ streak = 0, type, size = 18 }: FeatherIcon
 
   const palette = {
     normal: {
-      stemBase: '#059669', barb1: '#10b981', barb2: '#34d399', barb3: '#6ee7b7',
-      eyeOuter: '#0ea5e9', eyeMid: '#38bdf8', eyeInner: '#0369a1', eyeCore: '#082f49',
-      glow: 'rgba(16,185,129,0.35)',
+      fanBg:    '#0d5c4e',
+      fanMid:   '#14b8a6',
+      fanLight: '#5eead4',
+      rachis:   '#34d399',
+      eyeOuter: '#6ee7b7',
+      eyeMid:   '#2563eb',
+      eyeCore:  '#1e3a8a',
+      body:     '#1d4ed8',
+      bodyHi:   '#60a5fa',
+      head:     '#1e40af',
+      crest:    '#34d399',
+      beak:     '#fbbf24',
+      legs:     '#92400e',
+      glow:     'rgba(20,184,166,0.45)',
     },
     white: {
-      stemBase: '#94a3b8', barb1: '#cbd5e1', barb2: '#e2e8f0', barb3: '#f8fafc',
-      eyeOuter: '#94a3b8', eyeMid: '#cbd5e1', eyeInner: '#64748b', eyeCore: '#1e293b',
-      glow: 'rgba(203,213,225,0.4)',
+      fanBg:    '#334155',
+      fanMid:   '#94a3b8',
+      fanLight: '#f1f5f9',
+      rachis:   '#e2e8f0',
+      eyeOuter: '#f8fafc',
+      eyeMid:   '#94a3b8',
+      eyeCore:  '#1e293b',
+      body:     '#64748b',
+      bodyHi:   '#cbd5e1',
+      head:     '#475569',
+      crest:    '#e2e8f0',
+      beak:     '#fbbf24',
+      legs:     '#78716c',
+      glow:     'rgba(148,163,184,0.45)',
     },
     gold: {
-      stemBase: '#b45309', barb1: '#f59e0b', barb2: '#fbbf24', barb3: '#fde68a',
-      eyeOuter: '#d97706', eyeMid: '#fbbf24', eyeInner: '#92400e', eyeCore: '#451a03',
-      glow: 'rgba(251,191,36,0.4)',
+      fanBg:    '#78350f',
+      fanMid:   '#d97706',
+      fanLight: '#fde68a',
+      rachis:   '#fbbf24',
+      eyeOuter: '#fef3c7',
+      eyeMid:   '#f59e0b',
+      eyeCore:  '#451a03',
+      body:     '#92400e',
+      bodyHi:   '#fbbf24',
+      head:     '#78350f',
+      crest:    '#fcd34d',
+      beak:     '#fbbf24',
+      legs:     '#57534e',
+      glow:     'rgba(251,191,36,0.45)',
     },
   };
 
   const c = isWhite ? palette.white : isGold ? palette.gold : palette.normal;
   const uid = useId();
-  const gid = `pk_${uid.replace(/:/g, '')}_${resolvedType}`;
+  const gid = `pc_${uid.replace(/:/g, '')}_${resolvedType}`;
+
+  // Fan origin (top of body / where all feathers radiate from)
+  const fx = 50, fy = 76;
+
+  // 11 feather tips + their pre-calculated eye spot positions (at ~78% along each rachis)
+  const feathers = [
+    { t: [3,  62], e: [16, 66] },
+    { t: [4,  42], e: [16, 52] },
+    { t: [10, 24], e: [20, 38] },
+    { t: [23, 12], e: [30, 29] },
+    { t: [36,  5], e: [39, 23] },
+    { t: [50,  3], e: [50, 21] },
+    { t: [64,  5], e: [61, 23] },
+    { t: [77, 12], e: [70, 29] },
+    { t: [90, 24], e: [80, 38] },
+    { t: [96, 42], e: [84, 52] },
+    { t: [97, 62], e: [84, 66] },
+  ];
 
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 100 120"
+      viewBox="0 0 100 118"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      style={{ filter: `drop-shadow(0px 2px 6px ${c.glow})`, overflow: 'visible' }}
+      style={{ filter: `drop-shadow(0px 2px 5px ${c.glow})`, overflow: 'visible' }}
     >
       <defs>
-        <linearGradient id={`${gid}_body`} x1="50" y1="0" x2="50" y2="80" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor={c.barb3} />
-          <stop offset="50%" stopColor={c.barb2} />
-          <stop offset="100%" stopColor={c.barb1} />
-        </linearGradient>
-        <linearGradient id={`${gid}_stem`} x1="50" y1="40" x2="50" y2="118" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor={c.barb2} />
-          <stop offset="100%" stopColor={c.stemBase} />
-        </linearGradient>
+        <radialGradient id={`${gid}_fan`} cx="50%" cy="90%" r="95%">
+          <stop offset="0%"   stopColor={c.fanMid}  />
+          <stop offset="70%"  stopColor={c.fanBg}   />
+          <stop offset="100%" stopColor={c.fanBg} stopOpacity="0.5" />
+        </radialGradient>
+        <radialGradient id={`${gid}_body`} cx="50%" cy="35%" r="65%">
+          <stop offset="0%"   stopColor={c.bodyHi} />
+          <stop offset="100%" stopColor={c.body}   />
+        </radialGradient>
       </defs>
 
-      {/* Fan vanes — left */}
-      <path d="M50 42 C 44 32, 30 20, 12 16 C 18 22, 30 30, 42 42 Z" fill={`url(#${gid}_body)`} opacity="0.9"/>
-      <path d="M50 42 C 40 28, 24 12, 6 8 C 14 16, 28 26, 44 40 Z" fill={`url(#${gid}_body)`} opacity="0.8"/>
-      <path d="M50 42 C 42 26, 32 8, 20 0 C 26 10, 34 22, 46 38 Z" fill={`url(#${gid}_body)`} opacity="0.8"/>
-
-      {/* Fan vanes — right */}
-      <path d="M50 42 C 56 32, 70 20, 88 16 C 82 22, 70 30, 58 42 Z" fill={`url(#${gid}_body)`} opacity="0.9"/>
-      <path d="M50 42 C 60 28, 76 12, 94 8 C 86 16, 72 26, 56 40 Z" fill={`url(#${gid}_body)`} opacity="0.8"/>
-      <path d="M50 42 C 58 26, 68 8, 80 0 C 74 10, 66 22, 54 38 Z" fill={`url(#${gid}_body)`} opacity="0.8"/>
-
-      {/* Central top vane */}
-      <path d="M50 42 C 48 28, 46 12, 46 2 C 48 8, 52 8, 54 2 C 54 12, 52 28, 50 42 Z" fill={`url(#${gid}_body)`} opacity="0.95"/>
-
-      {/* Teardrop body below eye */}
+      {/* ── Fan dome background ── */}
       <path
-        d="M50 42 C 38 52, 34 68, 38 84 C 41 96, 50 108, 50 118 C 50 108, 59 96, 62 84 C 66 68, 62 52, 50 42 Z"
-        fill={`url(#${gid}_body)`}
-        opacity="0.9"
+        d={`M 3 ${fy} C 3 4, 97 4, 97 ${fy} Z`}
+        fill={`url(#${gid}_fan)`}
+        opacity="0.88"
       />
 
-      {/* Vane edge barb lines — left */}
-      <path d="M50 42 C 44 32, 30 20, 12 16" stroke={c.barb3} strokeWidth="0.8" opacity="0.6" fill="none"/>
-      <path d="M50 42 C 40 28, 24 12, 6 8"  stroke={c.barb3} strokeWidth="0.8" opacity="0.5" fill="none"/>
-      <path d="M50 42 C 42 26, 32 8, 20 0"  stroke={c.barb3} strokeWidth="0.8" opacity="0.5" fill="none"/>
+      {/* ── Rachis lines (feather stems) ── */}
+      {feathers.map((f, i) => (
+        <line
+          key={`r${i}`}
+          x1={fx} y1={fy}
+          x2={f.t[0]} y2={f.t[1]}
+          stroke={c.rachis}
+          strokeWidth="0.9"
+          opacity="0.75"
+        />
+      ))}
 
-      {/* Vane edge barb lines — right */}
-      <path d="M50 42 C 56 32, 70 20, 88 16" stroke={c.barb3} strokeWidth="0.8" opacity="0.6" fill="none"/>
-      <path d="M50 42 C 60 28, 76 12, 94 8"  stroke={c.barb3} strokeWidth="0.8" opacity="0.5" fill="none"/>
-      <path d="M50 42 C 58 26, 68 8, 80 0"   stroke={c.barb3} strokeWidth="0.8" opacity="0.5" fill="none"/>
+      {/* ── Feather edge fringe (fine barbs) ── */}
+      {feathers.map((f, i) => (
+        <line
+          key={`b${i}`}
+          x1={fx} y1={fy}
+          x2={f.t[0]} y2={f.t[1]}
+          stroke={c.fanLight}
+          strokeWidth="2.5"
+          opacity="0.12"
+        />
+      ))}
 
-      {/* Peacock eye */}
-      <circle cx="50" cy="42" r="16" fill={c.eyeOuter} opacity="0.3"/>
-      <circle cx="50" cy="42" r="13" fill={c.eyeOuter} opacity="0.7"/>
-      <circle cx="50" cy="42" r="9"  fill={c.eyeMid}/>
-      <circle cx="50" cy="42" r="6"  fill={c.eyeInner}/>
-      <circle cx="50" cy="42" r="3.5" fill={c.eyeCore}/>
-      <circle cx="46" cy="39" r="1.5" fill="white" opacity="0.6"/>
+      {/* ── Eye spots on feathers ── */}
+      {feathers.map((f, i) => (
+        <g key={`eye${i}`}>
+          <circle cx={f.e[0]} cy={f.e[1]} r="4.8" fill={c.eyeOuter} opacity="0.55" />
+          <circle cx={f.e[0]} cy={f.e[1]} r="3.2" fill={c.eyeMid} />
+          <circle cx={f.e[0]} cy={f.e[1]} r="1.7" fill={c.eyeCore} />
+        </g>
+      ))}
 
-      {/* Stem */}
-      <line x1="50" y1="42" x2="50" y2="118" stroke={`url(#${gid}_stem)`} strokeWidth="2.5" strokeLinecap="round"/>
+      {/* ── Body (torso) ── */}
+      <ellipse cx={50} cy={91} rx={11} ry={15} fill={`url(#${gid}_body)`} />
+
+      {/* Wing/chest iridescent patches */}
+      <ellipse cx={43} cy={90} rx={5} ry={9} fill={c.fanMid} opacity="0.5" />
+      <ellipse cx={57} cy={90} rx={5} ry={9} fill={c.fanMid} opacity="0.5" />
+      <ellipse cx={50} cy={88} rx={4} ry={6} fill={c.bodyHi} opacity="0.35" />
+
+      {/* ── Neck ── */}
+      <ellipse cx={50} cy={78} rx={5} ry={7} fill={c.head} />
+
+      {/* ── Head ── */}
+      <circle cx={50} cy={71} r={7} fill={c.head} />
+      <circle cx={50} cy={71} r={4} fill={c.bodyHi} opacity="0.5" />
+
+      {/* ── Crest feathers ── */}
+      <line x1={47} y1={65} x2={44} y2={58} stroke={c.crest} strokeWidth="1.1" strokeLinecap="round" />
+      <circle cx={44} cy={57} r="1.6" fill={c.eyeMid} />
+      <line x1={50} y1={64} x2={50} y2={57} stroke={c.crest} strokeWidth="1.1" strokeLinecap="round" />
+      <circle cx={50} cy={56} r="1.6" fill={c.eyeMid} />
+      <line x1={53} y1={65} x2={56} y2={58} stroke={c.crest} strokeWidth="1.1" strokeLinecap="round" />
+      <circle cx={56} cy={57} r="1.6" fill={c.eyeMid} />
+
+      {/* ── Beak ── */}
+      <path d="M 47 73 L 50 77 L 53 73" fill={c.beak} />
+
+      {/* ── Eyes (face) ── */}
+      <circle cx={46} cy={70} r="1.2" fill={c.eyeCore} />
+      <circle cx={54} cy={70} r="1.2" fill={c.eyeCore} />
+
+      {/* ── Legs ── */}
+      <line x1={46} y1={106} x2={43} y2={114} stroke={c.legs} strokeWidth="1.3" strokeLinecap="round" />
+      <line x1={54} y1={106} x2={57} y2={114} stroke={c.legs} strokeWidth="1.3" strokeLinecap="round" />
+      {/* Feet / toes */}
+      <line x1={43} y1={114} x2={38} y2={115} stroke={c.legs} strokeWidth="1" strokeLinecap="round" />
+      <line x1={43} y1={114} x2={42} y2={117} stroke={c.legs} strokeWidth="1" strokeLinecap="round" />
+      <line x1={43} y1={114} x2={46} y2={117} stroke={c.legs} strokeWidth="1" strokeLinecap="round" />
+      <line x1={57} y1={114} x2={62} y2={115} stroke={c.legs} strokeWidth="1" strokeLinecap="round" />
+      <line x1={57} y1={114} x2={58} y2={117} stroke={c.legs} strokeWidth="1" strokeLinecap="round" />
+      <line x1={57} y1={114} x2={54} y2={117} stroke={c.legs} strokeWidth="1" strokeLinecap="round" />
     </svg>
   );
 }
