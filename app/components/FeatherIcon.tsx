@@ -21,53 +21,26 @@ export default function FeatherIcon({ streak = 0, type, size = 18 }: FeatherIcon
   const isWhite = resolvedType === 'white';
   const isGold = resolvedType === 'gold';
 
-  // Color palettes per variant
   const palette = {
     normal: {
-      stemBase: '#059669',
-      stemTip: '#34d399',
-      barb1: '#10b981',
-      barb2: '#34d399',
-      barb3: '#6ee7b7',
-      eyeOuter: '#0ea5e9',
-      eyeMid: '#38bdf8',
-      eyeInner: '#0369a1',
-      eyeCore: '#082f49',
-      shimmer: '#a7f3d0',
+      stemBase: '#059669', barb1: '#10b981', barb2: '#34d399', barb3: '#6ee7b7',
+      eyeOuter: '#0ea5e9', eyeMid: '#38bdf8', eyeInner: '#0369a1', eyeCore: '#082f49',
       glow: 'rgba(16,185,129,0.35)',
     },
     white: {
-      stemBase: '#94a3b8',
-      stemTip: '#e2e8f0',
-      barb1: '#cbd5e1',
-      barb2: '#e2e8f0',
-      barb3: '#f8fafc',
-      eyeOuter: '#94a3b8',
-      eyeMid: '#cbd5e1',
-      eyeInner: '#64748b',
-      eyeCore: '#1e293b',
-      shimmer: '#f8fafc',
+      stemBase: '#94a3b8', barb1: '#cbd5e1', barb2: '#e2e8f0', barb3: '#f8fafc',
+      eyeOuter: '#94a3b8', eyeMid: '#cbd5e1', eyeInner: '#64748b', eyeCore: '#1e293b',
       glow: 'rgba(203,213,225,0.4)',
     },
     gold: {
-      stemBase: '#b45309',
-      stemTip: '#fcd34d',
-      barb1: '#f59e0b',
-      barb2: '#fbbf24',
-      barb3: '#fde68a',
-      eyeOuter: '#d97706',
-      eyeMid: '#fbbf24',
-      eyeInner: '#92400e',
-      eyeCore: '#451a03',
-      shimmer: '#fef9c3',
+      stemBase: '#b45309', barb1: '#f59e0b', barb2: '#fbbf24', barb3: '#fde68a',
+      eyeOuter: '#d97706', eyeMid: '#fbbf24', eyeInner: '#92400e', eyeCore: '#451a03',
       glow: 'rgba(251,191,36,0.4)',
     },
   };
 
   const c = isWhite ? palette.white : isGold ? palette.gold : palette.normal;
-
   const uid = useId();
-  // Unique gradient IDs per instance to avoid SVG defs conflicts and hydration mismatches
   const gid = `pk_${uid.replace(/:/g, '')}_${resolvedType}`;
 
   return (
@@ -80,81 +53,57 @@ export default function FeatherIcon({ streak = 0, type, size = 18 }: FeatherIcon
       style={{ filter: `drop-shadow(0px 2px 6px ${c.glow})`, overflow: 'visible' }}
     >
       <defs>
-        {/* Main feather body gradient */}
-        <linearGradient id={`${gid}_body`} x1="50" y1="5" x2="50" y2="105" gradientUnits="userSpaceOnUse">
+        <linearGradient id={`${gid}_body`} x1="50" y1="0" x2="50" y2="80" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor={c.barb3} />
-          <stop offset="40%" stopColor={c.barb2} />
+          <stop offset="50%" stopColor={c.barb2} />
           <stop offset="100%" stopColor={c.barb1} />
         </linearGradient>
-        {/* Stem gradient */}
-        <linearGradient id={`${gid}_stem`} x1="50" y1="5" x2="50" y2="115" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor={c.stemTip} />
+        <linearGradient id={`${gid}_stem`} x1="50" y1="40" x2="50" y2="118" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor={c.barb2} />
           <stop offset="100%" stopColor={c.stemBase} />
         </linearGradient>
-        {/* Eye radial gradient */}
-        <radialGradient id={`${gid}_eye`} cx="50%" cy="40%" r="50%">
-          <stop offset="0%" stopColor={c.eyeCore} />
-          <stop offset="35%" stopColor={c.eyeInner} />
-          <stop offset="65%" stopColor={c.eyeMid} />
-          <stop offset="100%" stopColor={c.eyeOuter} />
-        </radialGradient>
-        {/* Shimmer highlight */}
-        <radialGradient id={`${gid}_shimmer`} cx="35%" cy="30%" r="40%">
-          <stop offset="0%" stopColor={c.shimmer} stopOpacity="0.7" />
-          <stop offset="100%" stopColor={c.shimmer} stopOpacity="0" />
-        </radialGradient>
       </defs>
 
-      {/* ── Outer feather vanes (left) ── */}
-      <path d="M50 18 C 42 25, 28 32, 18 48 C 25 42, 36 38, 50 38 Z" fill={`url(#${gid}_body)`} opacity="0.75" />
-      <path d="M50 28 C 38 35, 22 46, 14 62 C 22 54, 35 50, 50 50 Z" fill={`url(#${gid}_body)`} opacity="0.75" />
-      <path d="M50 40 C 36 48, 20 60, 16 78 C 24 68, 37 63, 50 63 Z" fill={`url(#${gid}_body)`} opacity="0.75" />
-      <path d="M50 54 C 38 62, 26 74, 26 90 C 32 79, 42 73, 50 73 Z" fill={`url(#${gid}_body)`} opacity="0.7" />
+      {/* Fan vanes — left */}
+      <path d="M50 42 C 44 32, 30 20, 12 16 C 18 22, 30 30, 42 42 Z" fill={`url(#${gid}_body)`} opacity="0.9"/>
+      <path d="M50 42 C 40 28, 24 12, 6 8 C 14 16, 28 26, 44 40 Z" fill={`url(#${gid}_body)`} opacity="0.8"/>
+      <path d="M50 42 C 42 26, 32 8, 20 0 C 26 10, 34 22, 46 38 Z" fill={`url(#${gid}_body)`} opacity="0.8"/>
 
-      {/* ── Outer feather vanes (right) ── */}
-      <path d="M50 18 C 58 25, 72 32, 82 48 C 75 42, 64 38, 50 38 Z" fill={`url(#${gid}_body)`} opacity="0.75" />
-      <path d="M50 28 C 62 35, 78 46, 86 62 C 78 54, 65 50, 50 50 Z" fill={`url(#${gid}_body)`} opacity="0.75" />
-      <path d="M50 40 C 64 48, 80 60, 84 78 C 76 68, 63 63, 50 63 Z" fill={`url(#${gid}_body)`} opacity="0.75" />
-      <path d="M50 54 C 62 62, 74 74, 74 90 C 68 79, 58 73, 50 73 Z" fill={`url(#${gid}_body)`} opacity="0.7" />
+      {/* Fan vanes — right */}
+      <path d="M50 42 C 56 32, 70 20, 88 16 C 82 22, 70 30, 58 42 Z" fill={`url(#${gid}_body)`} opacity="0.9"/>
+      <path d="M50 42 C 60 28, 76 12, 94 8 C 86 16, 72 26, 56 40 Z" fill={`url(#${gid}_body)`} opacity="0.8"/>
+      <path d="M50 42 C 58 26, 68 8, 80 0 C 74 10, 66 22, 54 38 Z" fill={`url(#${gid}_body)`} opacity="0.8"/>
 
-      {/* ── Central feather body ── */}
+      {/* Central top vane */}
+      <path d="M50 42 C 48 28, 46 12, 46 2 C 48 8, 52 8, 54 2 C 54 12, 52 28, 50 42 Z" fill={`url(#${gid}_body)`} opacity="0.95"/>
+
+      {/* Teardrop body below eye */}
       <path
-        d="M50 5 C 34 18, 26 38, 28 62 C 32 80, 42 92, 50 105 C 58 92, 68 80, 72 62 C 74 38, 66 18, 50 5 Z"
+        d="M50 42 C 38 52, 34 68, 38 84 C 41 96, 50 108, 50 118 C 50 108, 59 96, 62 84 C 66 68, 62 52, 50 42 Z"
         fill={`url(#${gid}_body)`}
         opacity="0.9"
       />
 
-      {/* ── Eye (peacock feather eye) ── */}
-      {/* Outer glow ring */}
-      <ellipse cx="50" cy="38" rx="18" ry="22" fill={c.eyeOuter} opacity="0.35" />
-      {/* Main eye */}
-      <ellipse cx="50" cy="38" rx="14" ry="18" fill={`url(#${gid}_eye)`} />
-      {/* Shimmer on eye */}
-      <ellipse cx="50" cy="38" rx="14" ry="18" fill={`url(#${gid}_shimmer)`} />
-      {/* Highlight dot */}
-      <circle cx="44" cy="33" r="3" fill="white" opacity="0.45" />
+      {/* Vane edge barb lines — left */}
+      <path d="M50 42 C 44 32, 30 20, 12 16" stroke={c.barb3} strokeWidth="0.8" opacity="0.6" fill="none"/>
+      <path d="M50 42 C 40 28, 24 12, 6 8"  stroke={c.barb3} strokeWidth="0.8" opacity="0.5" fill="none"/>
+      <path d="M50 42 C 42 26, 32 8, 20 0"  stroke={c.barb3} strokeWidth="0.8" opacity="0.5" fill="none"/>
 
-      {/* ── Stem / rachis ── */}
-      <path
-        d="M50 5 Q 50 55 50 112"
-        stroke={`url(#${gid}_stem)`}
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
+      {/* Vane edge barb lines — right */}
+      <path d="M50 42 C 56 32, 70 20, 88 16" stroke={c.barb3} strokeWidth="0.8" opacity="0.6" fill="none"/>
+      <path d="M50 42 C 60 28, 76 12, 94 8"  stroke={c.barb3} strokeWidth="0.8" opacity="0.5" fill="none"/>
+      <path d="M50 42 C 58 26, 68 8, 80 0"   stroke={c.barb3} strokeWidth="0.8" opacity="0.5" fill="none"/>
 
-      {/* ── Fine barb lines (left) ── */}
-      <path d="M50 22 Q 38 28 30 36" stroke={c.barb2} strokeWidth="0.8" opacity="0.5" fill="none" />
-      <path d="M50 32 Q 36 40 26 50" stroke={c.barb2} strokeWidth="0.8" opacity="0.5" fill="none" />
-      <path d="M50 44 Q 35 53 24 64" stroke={c.barb2} strokeWidth="0.8" opacity="0.5" fill="none" />
-      <path d="M50 58 Q 37 67 29 78" stroke={c.barb2} strokeWidth="0.8" opacity="0.5" fill="none" />
-      <path d="M50 72 Q 40 80 34 90" stroke={c.barb2} strokeWidth="0.8" opacity="0.45" fill="none" />
+      {/* Peacock eye */}
+      <circle cx="50" cy="42" r="16" fill={c.eyeOuter} opacity="0.3"/>
+      <circle cx="50" cy="42" r="13" fill={c.eyeOuter} opacity="0.7"/>
+      <circle cx="50" cy="42" r="9"  fill={c.eyeMid}/>
+      <circle cx="50" cy="42" r="6"  fill={c.eyeInner}/>
+      <circle cx="50" cy="42" r="3.5" fill={c.eyeCore}/>
+      <circle cx="46" cy="39" r="1.5" fill="white" opacity="0.6"/>
 
-      {/* ── Fine barb lines (right) ── */}
-      <path d="M50 22 Q 62 28 70 36" stroke={c.barb2} strokeWidth="0.8" opacity="0.5" fill="none" />
-      <path d="M50 32 Q 64 40 74 50" stroke={c.barb2} strokeWidth="0.8" opacity="0.5" fill="none" />
-      <path d="M50 44 Q 65 53 76 64" stroke={c.barb2} strokeWidth="0.8" opacity="0.5" fill="none" />
-      <path d="M50 58 Q 63 67 71 78" stroke={c.barb2} strokeWidth="0.8" opacity="0.5" fill="none" />
-      <path d="M50 72 Q 60 80 66 90" stroke={c.barb2} strokeWidth="0.8" opacity="0.45" fill="none" />
+      {/* Stem */}
+      <line x1="50" y1="42" x2="50" y2="118" stroke={`url(#${gid}_stem)`} strokeWidth="2.5" strokeLinecap="round"/>
     </svg>
   );
 }
