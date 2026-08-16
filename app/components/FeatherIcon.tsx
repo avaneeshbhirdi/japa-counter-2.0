@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 
 export type FeatherType = 'normal' | 'white' | 'gold';
 
@@ -66,8 +66,9 @@ export default function FeatherIcon({ streak = 0, type, size = 18 }: FeatherIcon
 
   const c = isWhite ? palette.white : isGold ? palette.gold : palette.normal;
 
-  // Unique gradient IDs per variant to avoid conflicts when multiple icons rendered
-  const gid = `pk_${resolvedType}`;
+  const uid = useId();
+  // Unique gradient IDs per instance to avoid SVG defs conflicts and hydration mismatches
+  const gid = `pk_${uid.replace(/:/g, '')}_${resolvedType}`;
 
   return (
     <svg
