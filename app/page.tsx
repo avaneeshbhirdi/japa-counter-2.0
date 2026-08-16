@@ -1015,6 +1015,9 @@ export default function Home() {
               </>
             )}
           </div>
+          <div className="mobile-hint" style={{ marginTop: 'auto', paddingTop: '2rem', opacity: 0.6 }}>
+            ⟵ Swipe left to close
+          </div>
         </div>
       )}
 
@@ -1051,7 +1054,12 @@ export default function Home() {
             </button>
           </div>
 
-          <div className="log-table-card">
+          <div 
+            className="log-table-card"
+            onTouchStart={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
+            onTouchEnd={(e) => e.stopPropagation()}
+          >
             <h2 className="log-title">Leaderboard {leaderboardTab === 'city' && userCity ? `- ${userCity}` : ''}</h2>
             {leaderboardTab === 'city' && !userCity ? (
               <div className="log-empty" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
@@ -1121,6 +1129,9 @@ export default function Home() {
                 </table>
               </div>
             )}
+          </div>
+          <div className="mobile-hint" style={{ marginTop: 'auto', paddingTop: '2rem', opacity: 0.6 }}>
+            ⟵ Swipe left to close
           </div>
         </div>
       )}

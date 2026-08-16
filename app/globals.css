@@ -1048,6 +1048,10 @@ body {
 .log-panel::-webkit-scrollbar-track { background: transparent; }
 .log-panel::-webkit-scrollbar-thumb { background: rgba(100, 130, 255, 0.25); border-radius: 2px; }
 
+.mobile-hint {
+  display: none;
+}
+
 .swipe-handle {
   display: none;
 }
@@ -1506,7 +1510,8 @@ body {
 
   .page-container {
     gap: 0.875rem;
-    padding: 5rem 0.75rem 1rem;
+    padding: 4.5rem 0.75rem 1rem;
+    justify-content: flex-start;
   }
   
   /* Reduce blur on mobile for performance */
