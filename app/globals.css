@@ -961,27 +961,19 @@ body {
 .log-panel::-webkit-scrollbar-track { background: transparent; }
 .log-panel::-webkit-scrollbar-thumb { background: rgba(100, 130, 255, 0.25); border-radius: 2px; }
 
-.panel-close-btn {
+.swipe-handle {
   display: none;
 }
 
 @media (max-width: 640px) {
-  .panel-close-btn {
-    display: flex;
-    position: fixed;
-    top: 5.5rem;
-    right: 1.25rem;
-    width: 2.5rem;
-    height: 2.5rem;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    z-index: 10;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  .swipe-handle {
+    display: block;
+    width: 40px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    margin: -3rem auto 2.5rem auto; /* Offset to sit in the padding area */
+    position: relative;
   }
 }
 

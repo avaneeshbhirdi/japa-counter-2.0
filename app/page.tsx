@@ -72,6 +72,34 @@ export default function Home() {
   const [currentCalendarMonth, setCurrentCalendarMonth] = useState<Date>(new Date());
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
 
+  // ── Panel Swipe State ────────────────────────────────────────────────────
+  const [touchStartY, setTouchStartY] = useState<number | null>(null);
+  const [touchCurrentY, setTouchCurrentY] = useState<number | null>(null);
+
+  const handlePanelTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.currentTarget.scrollTop <= 5) {
+      setTouchStartY(e.touches[0].clientY);
+    }
+  };
+
+  const handlePanelTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (touchStartY !== null) {
+      setTouchCurrentY(e.touches[0].clientY);
+    }
+  };
+
+  const handlePanelTouchEnd = () => {
+    if (touchStartY !== null && touchCurrentY !== null) {
+      if (touchCurrentY - touchStartY > 80) { // 80px swipe threshold
+        setIsLogOpen(false);
+        setIsLeaderboardOpen(false);
+        setIsMobileMenuOpen(true);
+      }
+    }
+    setTouchStartY(null);
+    setTouchCurrentY(null);
+  };
+
   // ── Settings ─────────────────────────────────────────────────────────────
   const [isVibrationEnabled, setIsVibrationEnabled] = useState(true);
 
@@ -793,10 +821,13 @@ export default function Home() {
 
       {/* ── Sadhana Log Panel ── */}
       {user && (
-        <div className={`log-panel ${isLogOpen ? 'log-visible' : 'log-hidden'}`}>
-          <button className="panel-close-btn" onClick={() => setIsLogOpen(false)} aria-label="Close">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
+        <div 
+          className={`log-panel ${isLogOpen ? 'log-visible' : 'log-hidden'}`}
+          onTouchStart={handlePanelTouchStart}
+          onTouchMove={handlePanelTouchMove}
+          onTouchEnd={handlePanelTouchEnd}
+        >
+          <div className="swipe-handle"></div>
           {/* Table / Calendar */}
           <div className="log-table-card">
             {!selectedDay ? (
@@ -983,10 +1014,13 @@ export default function Home() {
 
       {/* ── Leaderboard Panel ── */}
       {user && (
-        <div className={`log-panel ${isLeaderboardOpen ? 'log-visible' : 'log-hidden'}`}>
-          <button className="panel-close-btn" onClick={() => setIsLeaderboardOpen(false)} aria-label="Close">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
+        <div 
+          className={`log-panel ${isLeaderboardOpen ? 'log-visible' : 'log-hidden'}`}
+          onTouchStart={handlePanelTouchStart}
+          onTouchMove={handlePanelTouchMove}
+          onTouchEnd={handlePanelTouchEnd}
+        >
+          <div className="swipe-handle"></div>
           <div className="log-stats-bar" style={{ justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button 
