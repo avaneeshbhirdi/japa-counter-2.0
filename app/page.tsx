@@ -72,6 +72,8 @@ export default function Home() {
   // ── Calendar State ───────────────────────────────────────────────────────
   const [currentCalendarMonth, setCurrentCalendarMonth] = useState<Date>(new Date());
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const [calTouchStartX, setCalTouchStartX] = useState<number | null>(null);
+  const [calTouchCurrentX, setCalTouchCurrentX] = useState<number | null>(null);
 
   // ── Global Swipe State ───────────────────────────────────────────────────
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
@@ -837,30 +839,27 @@ export default function Home() {
       {user && (
         <div className={`log-panel ${isLogOpen ? 'log-visible' : 'log-hidden'}`}>
           {/* Table / Calendar */}
-          <div className="log-table-card">
+          <div 
+            className="log-table-card"
+            onTouchStart={(e) => { e.stopPropagation(); setCalTouchStartX(e.touches[0].clientX); }}
+            onTouchMove={(e) => { e.stopPropagation(); if (calTouchStartX !== null) setCalTouchCurrentX(e.touches[0].clientX); }}
+            onTouchEnd={(e) => {
+              e.stopPropagation();
+              if (calTouchStartX !== null && calTouchCurrentX !== null) {
+                const diff = calTouchCurrentX - calTouchStartX;
+                if (diff > 50) prevMonth();
+                else if (diff < -50) nextMonth();
+              }
+              setCalTouchStartX(null);
+              setCalTouchCurrentX(null);
+            }}
+          >
             {!selectedDay ? (
               <>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <h2 className="log-title" style={{ margin: 0 }}>Sadhana Calendar</h2>
-                    <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.4rem', flexWrap: 'wrap' }}>
-                      <span className="streak-badge streak-badge-normal" style={{ marginTop: 0 }} title="Daily Streak: Chanting every day">
-                        <FeatherIcon type="normal" size={16} /> {currentStreak}
-                      </span>
-                      <span className="streak-badge streak-badge-white" style={{ marginTop: 0 }} title="Weekly Streak: 7 continuous days of chanting">
-                        <FeatherIcon type="white" size={16} /> {Math.floor(currentStreak / 7)}
-                      </span>
-                      <span className="streak-badge streak-badge-gold" style={{ marginTop: 0 }} title="Monthly Streak: 30 continuous days of chanting">
-                        <FeatherIcon type="gold" size={16} /> {Math.floor(currentStreak / 30)}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="calendar-nav">
-                    <button onClick={prevMonth} className="calendar-nav-btn">&larr;</button>
-                    <span className="calendar-month-label">
-                      {new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentCalendarMonth)}
-                    </span>
-                    <button onClick={nextMonth} className="calendar-nav-btn">&rarr;</button>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '1.5rem', gap: '1rem' }}>
+                  <h2 className="log-title" style={{ margin: 0, textAlign: 'center' }}>Sadhana Calendar</h2>
+                  <div className="calendar-month-box">
+                    {new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentCalendarMonth)}
                   </div>
                 </div>
 
@@ -1133,22 +1132,19 @@ export default function Home() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem', width: '100%', alignItems: 'center' }}>
           {/* Invocation */}
           <div 
-            className="mantra-panel invocation-panel" 
+            className={`mantra-panel invocation-panel ${isInvocationCollapsed ? 'collapsed' : 'expanded'}`} 
             onClick={() => setIsInvocationCollapsed(!isInvocationCollapsed)}
-            style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
+            style={{ cursor: 'pointer' }}
           >
-            {isInvocationCollapsed ? (
-              <div className="invocation-text" style={{ whiteSpace: 'normal', letterSpacing: '0.12em', padding: '0.5rem 0' }}>
-                Sri Pancha Tattva Mantra...
-              </div>
-            ) : (
-              <div className="invocation-text" style={{ whiteSpace: 'normal', lineHeight: '1.7' }}>
-                Jaya Sri-Krishna-Chaitanya <br />
-                Prabhu Nityananda <br />
-                Sri-Adwaita Gadadhara <br />
-                Srivasadi-Gaura-Bhakta-Vrinda
-              </div>
-            )}
+            <div className="invocation-text short" style={{ whiteSpace: 'normal', letterSpacing: '0.12em' }}>
+              Sri Pancha Tattva Mantra...
+            </div>
+            <div className="invocation-text full" style={{ whiteSpace: 'normal', lineHeight: '1.7' }}>
+              Jaya Sri-Krishna-Chaitanya <br />
+              Prabhu Nityananda <br />
+              Sri-Adwaita Gadadhara <br />
+              Srivasadi-Gaura-Bhakta-Vrinda
+            </div>
           </div>
 
           <div className="mantra-panel">

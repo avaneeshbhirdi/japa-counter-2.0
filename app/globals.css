@@ -718,6 +718,15 @@ body {
   100%      { left: 200%; }
 }
 
+.invocation-panel {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .invocation-text {
   font-family: var(--font-cinzel), serif;
   font-size: clamp(0.72rem, 1.2vw, 0.9rem);
@@ -727,6 +736,35 @@ body {
   white-space: nowrap;
   line-height: 1.8;
   text-transform: uppercase;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.invocation-panel.collapsed .invocation-text.short {
+  opacity: 1;
+  max-height: 100px;
+  transform: translateY(0) scale(1);
+}
+.invocation-panel.collapsed .invocation-text.full {
+  opacity: 0;
+  max-height: 0;
+  transform: translateY(-10px) scale(0.95);
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+}
+
+.invocation-panel.expanded .invocation-text.short {
+  opacity: 0;
+  max-height: 0;
+  transform: translateY(10px) scale(0.95);
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+}
+.invocation-panel.expanded .invocation-text.full {
+  opacity: 1;
+  max-height: 250px;
+  transform: translateY(0) scale(1);
 }
 
 .maha-mantra-text {
@@ -1597,6 +1635,19 @@ body {
   min-width: 120px;
   text-align: center;
 }
+.calendar-month-box {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.6rem 2rem;
+  border-radius: 0.75rem;
+  font-family: var(--font-inter), sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #fff;
+  letter-spacing: 0.05em;
+  text-align: center;
+}
+
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
