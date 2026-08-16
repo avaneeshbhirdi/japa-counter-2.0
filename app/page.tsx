@@ -973,8 +973,6 @@ export default function Home() {
               <button 
                 className={`leaderboard-tab ${leaderboardTab === 'city' ? 'active' : ''}`}
                 onClick={() => setLeaderboardTab('city')}
-                disabled={!userCity}
-                title={!userCity ? 'Set your city in profile first' : ''}
               >
                 My City {userCity && `(${userCity})`}
               </button>
@@ -996,7 +994,20 @@ export default function Home() {
 
           <div className="log-table-card">
             <h2 className="log-title">Leaderboard {leaderboardTab === 'city' && userCity ? `- ${userCity}` : ''}</h2>
-            {leaderboardData.length === 0 ? (
+            {leaderboardTab === 'city' && !userCity ? (
+              <div className="log-empty" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+                <p>You haven't set your city yet.</p>
+                <button 
+                  className="nav-btn primary"
+                  onClick={() => {
+                    setIsProfileOpen(true);
+                    setIsEditingProfile(true);
+                  }}
+                >
+                  Add City to Profile
+                </button>
+              </div>
+            ) : leaderboardData.length === 0 ? (
               <div className="log-empty">No devotees found on the leaderboard yet.</div>
             ) : (
               <div style={{ overflowX: 'auto' }}>
