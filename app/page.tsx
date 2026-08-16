@@ -51,6 +51,7 @@ export default function Home() {
   // ── UI State ─────────────────────────────────────────────────────────────
   const [isLogOpen, setIsLogOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [editName, setEditName] = useState('');
   const [editCity, setEditCity] = useState('');
@@ -525,35 +526,15 @@ export default function Home() {
       <nav className="nav-bar">
         <div className="nav-left">
           {user && (
-            <div className="fab-group">
-              <button
-                className={`fab-btn ${isLogOpen ? 'fab-active' : ''}`}
-                onClick={() => { setIsLogOpen(prev => !prev); setIsLeaderboardOpen(false); }}
-                title="Sadhana Log"
-                aria-label="Sadhana Log"
-              >
-                {/* Book icon */}
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-                </svg>
-              </button>
-              <button
-                className={`fab-btn ${isLeaderboardOpen ? 'fab-active' : ''}`}
-                onClick={() => { setIsLeaderboardOpen(prev => !prev); setIsLogOpen(false); }}
-                title="Leaderboard"
-                aria-label="Leaderboard"
-              >
-                {/* Trophy icon */}
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="8 21 12 17 16 21"/>
-                  <line x1="12" y1="17" x2="12" y2="11"/>
-                  <path d="M7 4H4a1 1 0 0 0-1 1v3a4 4 0 0 0 4 4h.5"/>
-                  <path d="M17 4h3a1 1 0 0 1 1 1v3a4 4 0 0 1-4 4h-.5"/>
-                  <path d="M8 4h8v7a4 4 0 0 1-8 0V4z"/>
-                </svg>
-              </button>
-            </div>
+            <button
+              className={`mobile-menu-btn${isMobileMenuOpen ? ' mobile-menu-btn--open' : ''}`}
+              onClick={() => setIsMobileMenuOpen(p => !p)}
+              aria-label="Open menu"
+            >
+              <span className="hamburger-bar" />
+              <span className="hamburger-bar" />
+              <span className="hamburger-bar" />
+            </button>
           )}
         </div>
 
@@ -708,6 +689,75 @@ export default function Home() {
           )}
         </div>
       </nav>
+
+      {/* ── Mobile Sliding Drawer ── */}
+      {user && (
+        <>
+          {/* Overlay */}
+          <div
+            className={`mobile-drawer-overlay${isMobileMenuOpen ? ' mobile-drawer-overlay--visible' : ''}`}
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          {/* Drawer */}
+          <div className={`mobile-drawer${isMobileMenuOpen ? ' mobile-drawer--open' : ''}`}>
+            <div className="mobile-drawer-header">
+              <span className="mobile-drawer-title">Menu</span>
+              <button
+                className="mobile-drawer-close"
+                onClick={() => setIsMobileMenuOpen(false)}
+                aria-label="Close menu"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+            <div className="mobile-drawer-items">
+              <button
+                className={`mobile-drawer-item${isLogOpen ? ' mobile-drawer-item--active' : ''}`}
+                onClick={() => {
+                  setIsLogOpen(prev => !prev);
+                  setIsLeaderboardOpen(false);
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                <span className="mobile-drawer-item-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                  </svg>
+                </span>
+                <span className="mobile-drawer-item-label">Sadhana Calendar</span>
+                <svg className="mobile-drawer-item-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </button>
+              <button
+                className={`mobile-drawer-item${isLeaderboardOpen ? ' mobile-drawer-item--active' : ''}`}
+                onClick={() => {
+                  setIsLeaderboardOpen(prev => !prev);
+                  setIsLogOpen(false);
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                <span className="mobile-drawer-item-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="8 21 12 17 16 21"/>
+                    <line x1="12" y1="17" x2="12" y2="11"/>
+                    <path d="M7 4H4a1 1 0 0 0-1 1v3a4 4 0 0 0 4 4h.5"/>
+                    <path d="M17 4h3a1 1 0 0 1 1 1v3a4 4 0 0 1-4 4h-.5"/>
+                    <path d="M8 4h8v7a4 4 0 0 1-8 0V4z"/>
+                  </svg>
+                </span>
+                <span className="mobile-drawer-item-label">Leaderboard</span>
+                <svg className="mobile-drawer-item-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* ── Sadhana Log Panel ── */}
       {user && (
