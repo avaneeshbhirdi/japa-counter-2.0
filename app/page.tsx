@@ -795,7 +795,6 @@ export default function Home() {
                 onClick={() => {
                   setIsLogOpen(prev => !prev);
                   setIsLeaderboardOpen(false);
-                  setIsMobileMenuOpen(false);
                 }}
               >
                 <span className="mobile-drawer-item-icon">
@@ -814,7 +813,6 @@ export default function Home() {
                 onClick={() => {
                   setIsLeaderboardOpen(prev => !prev);
                   setIsLogOpen(false);
-                  setIsMobileMenuOpen(false);
                 }}
               >
                 <span className="mobile-drawer-item-icon">
@@ -1138,7 +1136,7 @@ export default function Home() {
             style={{ cursor: 'pointer' }}
           >
             <div className="invocation-text short" style={{ whiteSpace: 'normal', letterSpacing: '0.12em' }}>
-              Sri Pancha Tattva Mantra...
+              Sri Pancha Tattva Mantra
             </div>
             <div className="invocation-text full" style={{ whiteSpace: 'normal', lineHeight: '1.7' }}>
               Jaya Sri-Krishna-Chaitanya <br />
@@ -1154,7 +1152,7 @@ export default function Home() {
             style={{ cursor: 'pointer' }}
           >
             <div className="invocation-text short maha-mantra-text" style={{ whiteSpace: 'normal', letterSpacing: '0.12em', padding: '0.5rem 0' }}>
-              Hare Krishna Mantra...
+              Hare Krishna Mantra
             </div>
             <div className="invocation-text full maha-mantra-text" style={{ whiteSpace: 'normal', lineHeight: '1.65' }}>
               Hare Krishna, Hare Krishna,<br />

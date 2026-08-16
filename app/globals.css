@@ -1477,7 +1477,7 @@ body {
     max-width: 100vw;
     max-height: 100vh;
     border-radius: 0;
-    z-index: 40; /* Below nav-bar which is 50 */
+    z-index: 1000; /* Above mobile drawer which is 999 */
     background: #0e2236; /* Solid background to hide what's underneath */
     padding: 5rem 1rem 2rem 1rem;
     transform: translateX(-100%);
