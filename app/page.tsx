@@ -167,7 +167,7 @@ export default function Home() {
   const firstDay = new Date(currentYear, currentMonthNum, 1).getDay();
 
   const logsByDay = useMemo(() => {
-    const map = new Map<string, { rounds: number; counts: number; logs: SadhanaLog[] }>();
+    const map = new Map<string, { rounds: number; counts: number; logs: SadhanaLog[]; qualifies: boolean }>();
     logs.forEach(log => {
       let dateKey = log.date;
       try {
@@ -178,12 +178,14 @@ export default function Home() {
       } catch {}
       
       if (!map.has(dateKey)) {
-        map.set(dateKey, { rounds: 0, counts: 0, logs: [] });
+        map.set(dateKey, { rounds: 0, counts: 0, logs: [], qualifies: false });
       }
       const entry = map.get(dateKey)!;
       entry.rounds += log.rounds || 0;
       entry.counts += log.counts || 0;
       entry.logs.push(log);
+      // A day qualifies for the streak only if it has >= 1 full round (108 counts)
+      entry.qualifies = entry.rounds >= 1 || entry.counts >= 108;
     });
     return map;
   }, [logs]);
@@ -204,12 +206,15 @@ export default function Home() {
     const checkDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const formatDate = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
-    if (!logsByDay.has(formatDate(checkDate))) {
+    // A day only counts toward the streak if it has >= 1 full round (108 counts)
+    const qualifiesOnDate = (dateKey: string) => logsByDay.get(dateKey)?.qualifies === true;
+
+    if (!qualifiesOnDate(formatDate(checkDate))) {
       checkDate.setDate(checkDate.getDate() - 1);
-      if (!logsByDay.has(formatDate(checkDate))) return 0; 
+      if (!qualifiesOnDate(formatDate(checkDate))) return 0;
     }
 
-    while (logsByDay.has(formatDate(checkDate))) {
+    while (qualifiesOnDate(formatDate(checkDate))) {
       streak++;
       checkDate.setDate(checkDate.getDate() - 1);
     }
@@ -773,12 +778,14 @@ export default function Home() {
                   {calendarCells.map((cell: any, idx: number) => {
                     if (!cell) return <div key={`empty-${idx}`} className="calendar-cell empty" />;
                     const hasStats = !!cell.stats;
+                    // A day is highlighted as "complete" only if it meets the streak threshold
+                    const isQualified = cell.stats?.qualifies === true;
                     const isToday = cell.dateKey === todayDateKey;
                     
                     return (
                       <div 
                         key={cell.dateKey} 
-                        className={`calendar-cell ${hasStats ? 'has-data' : ''} ${isToday ? 'today' : ''}`}
+                        className={`calendar-cell ${hasStats ? 'has-data' : ''} ${isQualified ? 'qualified' : ''} ${isToday ? 'today' : ''}`}
                         onClick={() => hasStats ? setSelectedDay(cell.dateKey) : null}
                       >
                         <span className="calendar-day-num">{cell.day}</span>
