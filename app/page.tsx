@@ -51,6 +51,7 @@ export default function Home() {
   // ── UI State ─────────────────────────────────────────────────────────────
   const [isLogOpen, setIsLogOpen] = useState(false);
   const [isInvocationCollapsed, setIsInvocationCollapsed] = useState(true);
+  const [isMahaMantraCollapsed, setIsMahaMantraCollapsed] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -1147,8 +1148,15 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mantra-panel">
-            <div className="maha-mantra-text">
+          <div 
+            className={`mantra-panel invocation-panel ${isMahaMantraCollapsed ? 'collapsed' : 'expanded'}`}
+            onClick={() => setIsMahaMantraCollapsed(!isMahaMantraCollapsed)}
+            style={{ cursor: 'pointer' }}
+          >
+            <div className="invocation-text short maha-mantra-text" style={{ whiteSpace: 'normal', letterSpacing: '0.12em', padding: '0.5rem 0' }}>
+              Hare Krishna Mantra...
+            </div>
+            <div className="invocation-text full maha-mantra-text" style={{ whiteSpace: 'normal', lineHeight: '1.65' }}>
               Hare Krishna, Hare Krishna,<br />
               Krishna Krishna, Hare Hare<br />
               Hare Rama, Hare Rama,<br />
