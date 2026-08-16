@@ -25,10 +25,20 @@ body {
   position: fixed;
   inset: 0;
   z-index: 0;
+  /* Gradient moved to ::before pseudo-element so it doesn't repaint on scroll */
+}
+.cosmic-background::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   background:
     radial-gradient(ellipse 70% 80% at 85% 90%, rgba(20, 80, 110, 0.55) 0%, transparent 60%),
     radial-gradient(ellipse 50% 60% at 15% 10%, rgba(20, 80, 120, 0.45) 0%, transparent 55%),
     radial-gradient(ellipse 100% 100% at 50% 50%, #0e2236 0%, #0a1a2c 100%);
+  /* Force gradient onto its own GPU-composited layer */
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 /* Twinkling stars */
@@ -52,7 +62,9 @@ body {
     radial-gradient(2px 2px at 33% 43%, rgba(255,255,255,0.4), transparent),
     radial-gradient(1px 1px at 90% 12%, rgba(255,255,255,0.7), transparent);
   animation: twinkle 8s ease-in-out infinite alternate;
+  /* Only animating opacity — pure compositor job, no layout */
   will-change: opacity;
+  /* Promote to GPU layer to prevent main-thread repaint */
   transform: translateZ(0);
 }
 
@@ -60,6 +72,11 @@ body {
   0%   { opacity: 0.7; }
   50%  { opacity: 1; }
   100% { opacity: 0.75; }
+}
+
+/* Pause star animation for users who prefer less motion */
+@media (prefers-reduced-motion: reduce) {
+  .stars { animation: none; opacity: 0.85; }
 }
 
 /* Nebula overlay */
@@ -99,6 +116,10 @@ body {
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.35),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  /* Create stacking context to prevent whole-page repaint on blur updates */
+  isolation: isolate;
+  /* Promote onto GPU compositor layer */
+  transform: translateZ(0);
 }
 
 /* ================================
@@ -189,9 +210,13 @@ body {
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.25s, border-color 0.25s;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
   padding: 0;
+  /* GPU layer for blur + transform animation */
+  transform: translateZ(0);
+  isolation: isolate;
+  will-change: transform;
 }
 
 .mobile-menu-btn:hover {
@@ -253,15 +278,19 @@ body {
   border-right: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 8px 0 40px rgba(0, 0, 0, 0.6);
   z-index: 999;
-  transform: translateX(-105%);
+  /* Use translate3d — same as translateX but explicitly triggers GPU compositing */
+  transform: translate3d(-105%, 0, 0);
   transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  /* Isolate blur stacking context so it doesn't cause full-page compositing */
+  isolation: isolate;
+  will-change: transform;
 }
 
 .mobile-drawer--open {
-  transform: translateX(0);
+  transform: translate3d(0, 0, 0);
 }
 
 .mobile-drawer-header {
@@ -383,8 +412,12 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.25s, border-color 0.25s, box-shadow 0.25s;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  /* GPU layer for blur elements */
+  transform: translateZ(0);
+  isolation: isolate;
+  will-change: transform;
 }
 
 .fab-btn:hover {
@@ -483,8 +516,11 @@ body {
   border-radius: 1.25rem;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
   padding: 1.25rem;
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: opacity 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), visibility 0.25s;
   transform-origin: top right;
+  /* GPU compositing for blur + scale animation — critical for jank-free open */
+  isolation: isolate;
+  will-change: transform, opacity;
 }
 
 .profile-dropdown.hidden {
@@ -698,24 +734,32 @@ body {
   max-width: 92vw;
   position: relative;
   overflow: hidden;
+  /* Promote blur elements to compositor to avoid triggering full-page repaints */
+  isolation: isolate;
+  transform: translateZ(0);
 }
 
-/* Subtle shimmer sweep */
+/* Shimmer sweep — uses transform: translateX instead of left to stay on GPU */
 .mantra-panel::after {
   content: '';
   position: absolute;
-  top: 0;
-  left: -100%;
+  inset: 0 0 0 -100%;
   width: 50%;
-  height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.025), transparent);
-  transform: skewX(-20deg);
+  transform: skewX(-20deg) translateX(0%);
   animation: panel-shine 10s ease-in-out infinite;
+  /* will-change on a pseudo-element keeps it off the main layer */
+  will-change: transform;
 }
 
 @keyframes panel-shine {
-  0%, 35%   { left: -100%; }
-  100%      { left: 200%; }
+  /* Animate transform: translateX only — NEVER animate left/width/height */
+  0%, 35%   { transform: skewX(-20deg) translateX(0%); }
+  100%      { transform: skewX(-20deg) translateX(400%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mantra-panel::after { animation: none; }
 }
 
 .invocation-panel {
@@ -909,7 +953,6 @@ body {
   cursor: pointer;
   border: 1px solid rgba(255, 255, 255, 0.09);
   
-  /* Performance optimization: use CSS variable for progress */
   background: 
     conic-gradient(
       rgba(40, 160, 210, 0.55) var(--progress-deg, 0deg),
@@ -920,9 +963,13 @@ body {
   box-shadow:
     0 10px 50px rgba(0, 0, 0, 0.55),
     inset 0 1px 20px rgba(255, 255, 255, 0.04);
+  /* Only transition transform and box-shadow — both are GPU-compositable */
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
   user-select: none;
   -webkit-user-select: none;
+  /* Force GPU layer: conic-gradient is expensive to repaint on the CPU */
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 .counter-circle:hover {
@@ -977,7 +1024,9 @@ body {
   overflow-y: auto;
   padding-bottom: 1.5rem;
   border-radius: 1.5rem;
-  transition: all 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  /* Only transition transform + opacity — both are GPU compositor operations */
+  transition: transform 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94), visibility 0.38s;
+  will-change: transform, opacity;
 }
 
 .log-panel.log-hidden {
@@ -1028,6 +1077,9 @@ body {
   gap: 1rem;
   flex-wrap: wrap;
   box-shadow: 0 0 40px rgba(10, 30, 50, 0.5);
+  /* GPU layer for blur */
+  isolation: isolate;
+  transform: translateZ(0);
 }
 
 .log-stat-item {
@@ -1098,6 +1150,9 @@ body {
   border-radius: 1.5rem;
   padding: 1.5rem;
   box-shadow: 0 0 40px rgba(10, 30, 50, 0.45);
+  /* GPU layer for blur element — prevents page-wide repaint on scroll */
+  isolation: isolate;
+  transform: translateZ(0);
 }
 
 .log-title {
@@ -1173,7 +1228,10 @@ body {
   backdrop-filter: blur(12px);
   opacity: 0;
   pointer-events: none;
+  /* Only animate opacity for the overlay — GPU compositor handles it */
   transition: opacity 0.4s ease;
+  will-change: opacity;
+  isolation: isolate;
 }
 
 .round-flash.show {
@@ -1193,13 +1251,21 @@ body {
   border-radius: 1.25rem;
   background: rgba(245, 200, 66, 0.08);
   box-shadow: 0 0 50px rgba(245, 200, 66, 0.18);
+  /* Animate ONLY transform+box-shadow — keeps it on the compositor thread */
   animation: pulse-gold 2.5s ease-in-out infinite;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 @keyframes pulse-gold {
-  0%   { box-shadow: 0 0 30px rgba(245,200,66,0.15); transform: scale(1); }
-  50%  { box-shadow: 0 0 60px rgba(245,200,66,0.35); transform: scale(1.03); }
-  100% { box-shadow: 0 0 30px rgba(245,200,66,0.15); transform: scale(1); }
+  /* Rewrote to animate transform:scale instead of box-shadow size — GPU only */
+  0%   { transform: scale(1) translateZ(0);   box-shadow: 0 0 30px rgba(245,200,66,0.15); }
+  50%  { transform: scale(1.03) translateZ(0); box-shadow: 0 0 60px rgba(245,200,66,0.35); }
+  100% { transform: scale(1) translateZ(0);   box-shadow: 0 0 30px rgba(245,200,66,0.15); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .round-flash-text { animation: none; transform: translateZ(0); }
 }
 
 /* ================================
@@ -1412,9 +1478,27 @@ body {
   .mobile-drawer-overlay {
     display: none !important;
   }
+  /* Remove will-change on desktop — saves GPU memory on larger screens */
+  .mobile-menu-btn,
+  .fab-btn {
+    will-change: auto;
+  }
 }
 
 @media (max-width: 640px) {
+
+  /* Reduce all blur values on mobile to save pixel fill-rate */
+  .glass { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .mobile-menu-btn { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .mobile-drawer { backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  .fab-btn { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .profile-dropdown { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+  .mantra-panel { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  .dashboard-bar { backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  .log-stats-bar { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .log-table-card { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .round-flash { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  .nav-btn { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 
   .desktop-only {
     display: none !important;
