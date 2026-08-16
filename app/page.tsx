@@ -100,7 +100,9 @@ export default function Home() {
       if (user) {
         // Fetch user's profile to get their city
         const { data } = await supabase.from('profiles').select('city').eq('id', user.id).single();
-        if (data?.city) setUserCity(data.city);
+        if (data?.city || user?.user_metadata?.city) {
+          setUserCity(data?.city || user?.user_metadata?.city);
+        }
       }
     };
     getUser();
@@ -526,15 +528,45 @@ export default function Home() {
       <nav className="nav-bar">
         <div className="nav-left">
           {user && (
-            <button
-              className={`mobile-menu-btn${isMobileMenuOpen ? ' mobile-menu-btn--open' : ''}`}
-              onClick={() => setIsMobileMenuOpen(p => !p)}
-              aria-label="Open menu"
-            >
-              <span className="hamburger-bar" />
-              <span className="hamburger-bar" />
-              <span className="hamburger-bar" />
-            </button>
+            <>
+              <button
+                className={`mobile-menu-btn${isMobileMenuOpen ? ' mobile-menu-btn--open' : ''}`}
+                onClick={() => setIsMobileMenuOpen(p => !p)}
+                aria-label="Open menu"
+              >
+                <span className="hamburger-bar" />
+                <span className="hamburger-bar" />
+                <span className="hamburger-bar" />
+              </button>
+              
+              <div className="fab-group desktop-only">
+                <button
+                  className={`fab-btn ${isLogOpen ? 'fab-active' : ''}`}
+                  onClick={() => { setIsLogOpen(prev => !prev); setIsLeaderboardOpen(false); }}
+                  title="Sadhana Calendar"
+                  aria-label="Sadhana Calendar"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                  </svg>
+                </button>
+                <button
+                  className={`fab-btn ${isLeaderboardOpen ? 'fab-active' : ''}`}
+                  onClick={() => { setIsLeaderboardOpen(prev => !prev); setIsLogOpen(false); }}
+                  title="Leaderboard"
+                  aria-label="Leaderboard"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="8 21 12 17 16 21"/>
+                    <line x1="12" y1="17" x2="12" y2="11"/>
+                    <path d="M7 4H4a1 1 0 0 0-1 1v3a4 4 0 0 0 4 4h.5"/>
+                    <path d="M17 4h3a1 1 0 0 1 1 1v3a4 4 0 0 1-4 4h-.5"/>
+                    <path d="M8 4h8v7a4 4 0 0 1-8 0V4z"/>
+                  </svg>
+                </button>
+              </div>
+            </>
           )}
         </div>
 
@@ -762,32 +794,9 @@ export default function Home() {
       {/* ── Sadhana Log Panel ── */}
       {user && (
         <div className={`log-panel ${isLogOpen ? 'log-visible' : 'log-hidden'}`}>
-          {/* Stats Bar */}
-          <div className="log-stats-bar">
-            <div className="log-stat-item">
-              <span className="log-stat-label">Lifetime Counts</span>
-              <span className="log-stat-value purple">{lifetimeCounts}</span>
-            </div>
-            <div className="log-divider-v" />
-            <div className="log-stat-item">
-              <span className="log-stat-label">Lifetime Rounds</span>
-              <span className="log-stat-value emerald">{lifetimeRounds}</span>
-            </div>
-            <div className="log-divider-v" />
-            <button
-              className={`log-delete-btn ${selectedLogs.length > 0 ? 'active' : ''}`}
-              onClick={handleDeleteLogs}
-              disabled={isDeletingLogs || selectedLogs.length === 0}
-              title={selectedLogs.length === 0 ? 'Select logs to delete' : 'Delete selected'}
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 6 6 18" /><path d="m6 6 12 12" />
-              </svg>
-              Delete {selectedLogs.length > 0 && `(${selectedLogs.length})`}
-            </button>
-          </div>
-
-          {/* Table */}
+          <button className="panel-close-btn" onClick={() => setIsLogOpen(false)} aria-label="Close">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
           {/* Table / Calendar */}
           <div className="log-table-card">
             {!selectedDay ? (
@@ -842,7 +851,6 @@ export default function Home() {
                         {hasStats && (
                           <div className="calendar-stats">
                             <span className="calendar-rounds">{cell.stats.rounds}R</span>
-                            <span className="calendar-counts">{cell.stats.counts}C</span>
                           </div>
                         )}
                       </div>
@@ -856,9 +864,23 @@ export default function Home() {
                   <h2 className="log-title" style={{ margin: 0 }}>
                     {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(selectedDay))}
                   </h2>
-                  <button className="nav-btn primary" onClick={() => setSelectedDay(null)} style={{ padding: '0.3rem 0.8rem' }}>
-                    &larr; Back
-                  </button>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button
+                      className={`log-delete-btn ${selectedLogs.length > 0 ? 'active' : ''}`}
+                      onClick={handleDeleteLogs}
+                      disabled={isDeletingLogs || selectedLogs.length === 0}
+                      title={selectedLogs.length === 0 ? 'Select logs to delete' : 'Delete selected'}
+                      style={{ padding: '0.3rem 0.8rem', height: 'auto', background: 'rgba(239, 68, 68, 0.1)' }}
+                    >
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+                      </svg>
+                      Delete {selectedLogs.length > 0 && `(${selectedLogs.length})`}
+                    </button>
+                    <button className="nav-btn primary" onClick={() => setSelectedDay(null)} style={{ padding: '0.3rem 0.8rem' }}>
+                      &larr; Back
+                    </button>
+                  </div>
                 </div>
                 <div className="mobile-hint">Long-press a row to select it for deletion</div>
                 
@@ -962,6 +984,9 @@ export default function Home() {
       {/* ── Leaderboard Panel ── */}
       {user && (
         <div className={`log-panel ${isLeaderboardOpen ? 'log-visible' : 'log-hidden'}`}>
+          <button className="panel-close-btn" onClick={() => setIsLeaderboardOpen(false)} aria-label="Close">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
           <div className="log-stats-bar" style={{ justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button 

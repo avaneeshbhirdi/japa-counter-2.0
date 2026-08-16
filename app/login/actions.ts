@@ -6,26 +6,55 @@ import { createClient } from '@/utils/supabase/server'
 
 export async function login(formData: FormData) {
     const supabase = await createClient()
-    const data = {
-        email: formData.get('email') as string,
-        password: formData.get('password') as string,
-    }
-    const { error } = await supabase.auth.signInWithPassword(data)
-    if (error) redirect('/login?message=Could not authenticate user: ' + error.message)
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
+    
+    if (!email || !password) return { error: 'Email and password are required' }
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) return { error: error.message }
+    
     revalidatePath('/', 'layout')
-    redirect('/')
+    return { success: true }
 }
 
 export async function signup(formData: FormData) {
     const supabase = await createClient()
-    const data = {
-        email: formData.get('email') as string,
-        password: formData.get('password') as string,
-    }
-    const { error } = await supabase.auth.signUp(data)
-    if (error) redirect('/login?message=Could not create user: ' + error.message)
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
+    const name = formData.get('name') as string
+    const city = formData.get('city') as string
+    
+    if (!email || !password) return { error: 'Email and password are required' }
+
+    const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+            data: {
+                full_name: name,
+                city: city,
+            }
+        }
+    })
+    
+    if (error) return { error: error.message }
+    
+    return { success: true }
+}
+
+export async function verifyOtp(email: string, token: string) {
+    const supabase = await createClient()
+    const { error } = await supabase.auth.verifyOtp({
+        email,
+        token,
+        type: 'signup'
+    })
+    
+    if (error) return { error: error.message }
+    
     revalidatePath('/', 'layout')
-    redirect('/')
+    return { success: true }
 }
 
 export async function signInWithGoogle() {

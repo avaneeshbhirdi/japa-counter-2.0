@@ -720,7 +720,7 @@ body {
 
 .invocation-text {
   font-family: var(--font-cinzel), serif;
-  font-size: 0.72rem;
+  font-size: clamp(0.72rem, 1.2vw, 0.9rem);
   letter-spacing: 0.18em;
   color: rgba(190, 200, 230, 0.75);
   font-style: italic;
@@ -731,7 +731,7 @@ body {
 
 .maha-mantra-text {
   font-family: var(--font-cinzel), serif;
-  font-size: 1.15rem;
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
   font-weight: 600;
   line-height: 1.65;
   color: #f1e2c3;
@@ -960,6 +960,30 @@ body {
 .log-panel::-webkit-scrollbar { width: 4px; }
 .log-panel::-webkit-scrollbar-track { background: transparent; }
 .log-panel::-webkit-scrollbar-thumb { background: rgba(100, 130, 255, 0.25); border-radius: 2px; }
+
+.panel-close-btn {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .panel-close-btn {
+    display: flex;
+    position: fixed;
+    top: 5.5rem;
+    right: 1.25rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    z-index: 10;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+}
 
 .log-stats-bar {
   background: rgba(18, 60, 90, 0.75);
@@ -1361,8 +1385,9 @@ body {
 }
 
 @media (max-width: 640px) {
-  .invocation-panel {
-    display: none;
+
+  .desktop-only {
+    display: none !important;
   }
 
   .page-container {
@@ -1651,19 +1676,14 @@ body {
 .calendar-stats {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 0.1rem;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
 }
 .calendar-rounds {
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: #6ee7b7;
-  line-height: 1;
-}
-.calendar-counts {
-  font-size: 0.6rem;
-  font-weight: 600;
-  color: #c4b5fd;
   line-height: 1;
 }
 
@@ -1677,6 +1697,45 @@ body {
 
 .spin {
   animation: spin 1s linear infinite;
+}
+
+/* ================================
+   AUTH PAGE TABS
+   ================================ */
+.auth-tabs {
+  display: flex;
+  background: rgba(10, 25, 40, 0.6);
+  border-radius: 0.75rem;
+  padding: 0.35rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  background: transparent;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.auth-tab:hover:not(.active) {
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.auth-tab.active {
+  background: rgba(80, 160, 220, 0.2);
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(80, 160, 220, 0.3);
 }
 
 @keyframes count-pop {
