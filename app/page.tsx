@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { createClient } from '@/utils/supabase/client';
 import { User } from '@supabase/supabase-js';
 import FeatherIcon from './components/FeatherIcon';
+import { MoonAltToSunnyOutlineLoopTransitionIcon } from './components/ThemeToggleIcon';
 
 const MAX_COUNT = 108;
 
@@ -625,9 +626,17 @@ export default function Home() {
           </a>
         </div>
 
-        <div className="nav-right">
+        <div className="nav-right" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           {user ? (
-            <div style={{ position: 'relative' }}>
+            <>
+              <button 
+                className="nav-btn" 
+                style={{ padding: '0', borderRadius: '50%', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '38px', height: '38px' }}
+                aria-label="Toggle theme"
+              >
+                <MoonAltToSunnyOutlineLoopTransitionIcon size={22} />
+              </button>
+              <div style={{ position: 'relative' }}>
               <button
                 className="profile-btn"
                 onClick={() => setIsProfileOpen(p => !p)}
@@ -773,6 +782,7 @@ export default function Home() {
                 )}
               </div>
             </div>
+            </>
           ) : (
             <>
               <a href="/login" className="nav-btn">Log In</a>
