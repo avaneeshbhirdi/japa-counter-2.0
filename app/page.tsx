@@ -94,9 +94,12 @@ export default function Home() {
     if (touchStartX !== null && touchCurrentX !== null) {
       const deltaX = touchCurrentX - touchStartX;
       
-      // Swipe Right (Open Menu) from left edge
-      if (deltaX > 60 && touchStartX < 40) {
-        if (!isLeaderboardOpen && !isLogOpen) {
+      // Swipe Right (Open Menu or Close Profile)
+      if (deltaX > 60) {
+        if (isProfileOpen) {
+          setIsProfileOpen(false);
+          setIsEditingProfile(false);
+        } else if (touchStartX < 40 && !isLeaderboardOpen && !isLogOpen) {
           setIsMobileMenuOpen(true);
         }
       }
@@ -638,6 +641,18 @@ export default function Home() {
 
               {/* Profile Dropdown */}
               <div className={`profile-dropdown ${isProfileOpen ? 'visible' : 'hidden'}`}>
+                <div className="mobile-drawer-header" style={{ padding: '0 0 1rem 0', marginBottom: '1rem' }}>
+                  <span className="mobile-drawer-title">Profile</span>
+                  <button
+                    className="mobile-drawer-close"
+                    onClick={() => { setIsProfileOpen(false); setIsEditingProfile(false); }}
+                    aria-label="Close profile"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                  </button>
+                </div>
                 {isEditingProfile ? (
                   <>
                     <div
@@ -772,13 +787,12 @@ export default function Home() {
         <>
           {/* Overlay */}
           <div
-            className={`mobile-drawer-overlay${isMobileMenuOpen ? ' mobile-drawer-overlay--visible' : ''}`}
-            onClick={() => setIsMobileMenuOpen(false)}
+            className={`mobile-drawer-overlay${(isMobileMenuOpen || isProfileOpen) ? ' mobile-drawer-overlay--visible' : ''}`}
+            onClick={() => { setIsMobileMenuOpen(false); setIsProfileOpen(false); }}
           />
           {/* Drawer */}
           <div className={`mobile-drawer${isMobileMenuOpen ? ' mobile-drawer--open' : ''}`}>
             <div className="mobile-drawer-header">
-              <span className="mobile-drawer-title">Menu</span>
               <button
                 className="mobile-drawer-close"
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -788,6 +802,7 @@ export default function Home() {
                   <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                 </svg>
               </button>
+              <span className="mobile-drawer-title">Sadhana Log</span>
             </div>
             <div className="mobile-drawer-items">
               <button
@@ -837,6 +852,11 @@ export default function Home() {
       {/* ── Sadhana Log Panel ── */}
       {user && (
         <div className={`log-panel ${isLogOpen ? 'log-visible' : 'log-hidden'}`}>
+          <div className="log-stats-bar" style={{ paddingBottom: '0.5rem', paddingTop: '0.5rem', display: 'flex', justifyContent: 'flex-start' }} onTouchStart={(e) => e.stopPropagation()} onTouchMove={(e) => e.stopPropagation()} onTouchEnd={(e) => e.stopPropagation()}>
+            <button className="nav-btn primary" onClick={() => setIsLogOpen(false)} style={{ padding: '0.3rem 0.8rem' }}>
+              &larr; Back
+            </button>
+          </div>
           {/* Table / Calendar */}
           <div 
             className="log-table-card"
@@ -857,8 +877,16 @@ export default function Home() {
               <>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '1.5rem', gap: '1rem' }}>
                   <h2 className="log-title" style={{ margin: 0, textAlign: 'center' }}>Sadhana Calendar</h2>
-                  <div className="calendar-month-box">
-                    {new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentCalendarMonth)}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <button className="calendar-nav-btn" onClick={(e) => { e.stopPropagation(); prevMonth(); }} aria-label="Previous month">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
+                    </button>
+                    <div className="calendar-month-box">
+                      {new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentCalendarMonth)}
+                    </div>
+                    <button className="calendar-nav-btn" onClick={(e) => { e.stopPropagation(); nextMonth(); }} aria-label="Next month">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
+                    </button>
                   </div>
                 </div>
 
@@ -1024,8 +1052,11 @@ export default function Home() {
       {/* ── Leaderboard Panel ── */}
       {user && (
         <div className={`log-panel ${isLeaderboardOpen ? 'log-visible' : 'log-hidden'}`}>
-          <div className="log-stats-bar" style={{ justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div className="log-stats-bar" style={{ justifyContent: 'space-between' }} onTouchStart={(e) => e.stopPropagation()} onTouchMove={(e) => e.stopPropagation()} onTouchEnd={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <button className="nav-btn primary" onClick={() => setIsLeaderboardOpen(false)} style={{ padding: '0.3rem 0.8rem', marginRight: '0.5rem' }}>
+                &larr; Back
+              </button>
               <button 
                 className={`leaderboard-tab ${leaderboardTab === 'global' ? 'active' : ''}`}
                 onClick={() => setLeaderboardTab('global')}
