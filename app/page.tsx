@@ -862,11 +862,10 @@ export default function Home() {
       {/* ── Sadhana Log Panel ── */}
       {user && (
         <div className={`log-panel ${isLogOpen ? 'log-visible' : 'log-hidden'}`}>
-          <div className="log-stats-bar" style={{ paddingBottom: '0.5rem', paddingTop: '0.5rem', display: 'flex', justifyContent: 'flex-start' }} onTouchStart={(e) => e.stopPropagation()} onTouchMove={(e) => e.stopPropagation()} onTouchEnd={(e) => e.stopPropagation()}>
-            <button className="nav-btn primary" onClick={() => setIsLogOpen(false)} style={{ padding: '0.3rem 0.8rem' }}>
-              &larr; Back
-            </button>
-          </div>
+          <button className="panel-back-btn" onClick={() => setIsLogOpen(false)} aria-label="Go back">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Back
+          </button>
           {/* Table / Calendar */}
           <div 
             className="log-table-card"
@@ -1053,8 +1052,9 @@ export default function Home() {
               </>
             )}
           </div>
-          <div className="mobile-hint" style={{ marginTop: 'auto', paddingTop: '2rem', opacity: 0.6 }}>
-            ⟵ Swipe left to close
+          <div className="swipe-hint">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            <span>Swipe left to close</span>
           </div>
         </div>
       )}
@@ -1062,11 +1062,12 @@ export default function Home() {
       {/* ── Leaderboard Panel ── */}
       {user && (
         <div className={`log-panel ${isLeaderboardOpen ? 'log-visible' : 'log-hidden'}`}>
-          <div className="log-stats-bar" style={{ justifyContent: 'space-between' }} onTouchStart={(e) => e.stopPropagation()} onTouchMove={(e) => e.stopPropagation()} onTouchEnd={(e) => e.stopPropagation()}>
+          <button className="panel-back-btn" onClick={() => setIsLeaderboardOpen(false)} aria-label="Go back">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Back
+          </button>
+          <div className="log-stats-bar" style={{ justifyContent: 'space-between', marginTop: '3.5rem' }} onTouchStart={(e) => e.stopPropagation()} onTouchMove={(e) => e.stopPropagation()} onTouchEnd={(e) => e.stopPropagation()}>
             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-              <button className="nav-btn primary" onClick={() => setIsLeaderboardOpen(false)} style={{ padding: '0.3rem 0.8rem', marginRight: '0.5rem' }}>
-                &larr; Back
-              </button>
               <button 
                 className={`leaderboard-tab ${leaderboardTab === 'global' ? 'active' : ''}`}
                 onClick={() => setLeaderboardTab('global')}
@@ -1171,8 +1172,9 @@ export default function Home() {
               </div>
             )}
           </div>
-          <div className="mobile-hint" style={{ marginTop: 'auto', paddingTop: '2rem', opacity: 0.6 }}>
-            ⟵ Swipe left to close
+          <div className="swipe-hint">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            <span>Swipe left to close</span>
           </div>
         </div>
       )}
